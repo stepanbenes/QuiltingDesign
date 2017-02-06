@@ -10,16 +10,16 @@
 using namespace std;
 
 // Unresolved issues:
-// TODO Interpolating RGB pixel (linear element-wise interpolation is not optimal)
-// TODO Decide whether to allow non-integer sample origins
-// TODO Change rgbArray into more general imgArray capable of handling both grayscale and RGB
+// NOTE Interpolating RGB pixel (linear element-wise interpolation is not optimal)
+// NOTE Decide whether to allow non-integer sample origins
+// NOTE Change rgbArray into more general imgArray capable of handling both grayscale and RGB
 
 int main()
 {
 	// Define input file name
-	string settingsFile = "_allSettings.set"; 
+	string settingsFile = "test-iofiles/_allSettings.set"; 
 	ostringstream label;
-	string labelBegin = "_sample";
+	string labelBegin = "test-iofiles/_sample";
 	string labelEnd = ".tpg";
 	cout << "Starting QuiltingDesing script..." << endl;
 
@@ -62,16 +62,20 @@ int main()
 	}
 
 	// Merge samples
+	rgbArray * mergedSample = nullptr;
 	for (int i = 0; i < myTileSet.nTiles; i++) {
 		cout << myTileSet.tilesCodes[i*4] << myTileSet.tilesCodes[i*4+1] <<	myTileSet.tilesCodes[i*4+2] << myTileSet.tilesCodes[i*4+3] << endl;
 	}
-	merge_samples(allSamples[0], allSamples[1], nO);
+	mergedSample = merge_samples(allSamples[0], allSamples[1], nO);
+	cout << mergedSample->size[0] << " " << mergedSample->size[1] << endl;
+	mergedSample->save_textified_image("test-iofiles/_mergedSample.tpg");
 
 	cout << "Hit any key to exit the script ...";
 	cin.get();
 
 	// Free allocated variables
 	delete testSample;
+	delete mergedSample;
 	for (int i = 0; i < nSample; i++) {
 		delete allSamples[i];
 	}

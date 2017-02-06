@@ -2,8 +2,9 @@
 #include <iostream>
 #include <string>
 #include <fstream>
-#include "rgbArray.h"
 #include <algorithm>
+#include <cmath>
+#include "rgbArray.h"
 
 using namespace std;
 

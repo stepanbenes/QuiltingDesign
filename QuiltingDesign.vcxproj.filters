@@ -24,9 +24,6 @@
     <ClCompile Include="rgbArray.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="rgbSpecimen.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="tileSet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -36,9 +33,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="rgbArray.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="rgbSpecimen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="tileSet.h">

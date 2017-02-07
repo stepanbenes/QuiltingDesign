@@ -113,13 +113,11 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="myAuxFuns.cpp" />
     <ClCompile Include="rgbArray.cpp" />
-    <ClCompile Include="rgbSpecimen.cpp" />
     <ClCompile Include="tileSet.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="myAuxFuns.h" />
     <ClInclude Include="rgbArray.h" />
-    <ClInclude Include="rgbSpecimen.h" />
     <ClInclude Include="tileSet.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

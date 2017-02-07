@@ -23,8 +23,13 @@ int load_setting(string inFile, string * specimenFile, string * tileSetFile, int
 	return 0;
 }
 
-rgbArray * merge_samples(rgbArray * pS1, rgbArray * pS2, int nO)
+rgbArray * merge_samples(rgbArray * pS1, rgbArray * pS2, int nO, int nM)
 {
+	// MERGE_SAMPLES performs image quilting algorithm on two samples,
+	// which are assumed to be aligned side-by-side, pS1 first. Input 
+	// parameter nM defines whether the wedge mask should be applied 
+	// only to the upper end (nM=1) or both (nM=2);
+
 	int v1 = 0;
 	int v2 = 0;
 	double locErr = 0.0;
@@ -54,9 +59,15 @@ rgbArray * merge_samples(rgbArray * pS1, rgbArray * pS2, int nO)
 		for (int j = 0; j < nO; j++) {
 			if (j < maskWidth) {
 				arrayErr[i*nO + j] = maxErr;
+				if (nM == 2) {
+					arrayErr[(nRows-1-i)*nO + j] = maxErr;
+				}
 			}
 			else if (j >= (nO - maskWidth)) {
 				arrayErr[i*nO + j] = maxErr;
+				if (nM == 2) {
+					arrayErr[(nRows - 1 - i)*nO + j] = maxErr;
+				}
 			}
 		}
 	}							
@@ -65,20 +76,17 @@ rgbArray * merge_samples(rgbArray * pS1, rgbArray * pS2, int nO)
 		for (int j = 0; j < nO; j++) {
 			if (j < maskWidth) {
 				arrayErr[(intHalf+i)*nO + j] = maxErr;
+				if (nM == 2) {
+					arrayErr[(nRows - 1 - intHalf - i)*nO + j] = maxErr;
+				}
 			}
 			else if (j >= (nO - maskWidth)) {
 				arrayErr[(intHalf + i)*nO + j] = maxErr;
+				if (nM == 2) {
+					arrayErr[(nRows - 1 - intHalf - i)*nO + j] = maxErr;
+				}
 			}
 		}
-	}
-
-	// Plot and check array err
-	for (int i = 0; i < nRows; i++) {
-		cout << i << "th row: ";
-		for (int j = 0; j < nO; j++) {
-			cout << arrayErr[i*nO + j] << ", ";
-		}
-		cout << endl;
 	}
 
 	// Compute cumulative error
@@ -117,7 +125,7 @@ rgbArray * merge_samples(rgbArray * pS1, rgbArray * pS2, int nO)
 	// Assemble merged image
 	rgbArray * mergedSample;
 	mergedSample = new rgbArray;
-	int mergedSampleSize[2] = { nRows, 2*nRows-nO };
+	int mergedSampleSize[2] = { nRows, (pS1->size[1]+ pS2->size[1])-nO };
 
 	mergedSample->initialize_array(mergedSampleSize);
 	for (int i = 0; i < nRows; i++) {
@@ -137,7 +145,7 @@ rgbArray * merge_samples(rgbArray * pS1, rgbArray * pS2, int nO)
 				}
 				else {
 					// TODO Decide what to do with the seam pixels (averaged for now)
-					//mergedSample->data[mergedSample->convert_3D_to_1D(i, offset + j, k)] = (int)( 0.5*pS1->data[pS1->convert_3D_to_1D(i, offset + j, k)] + 0.5*pS2->data[pS2->convert_3D_to_1D(i, j, k)]);
+					mergedSample->data[mergedSample->convert_3D_to_1D(i, offset + j, k)] = (int)( 0.5*pS1->data[pS1->convert_3D_to_1D(i, offset + j, k)] + 0.5*pS2->data[pS2->convert_3D_to_1D(i, j, k)]);
 				}
 			}
 

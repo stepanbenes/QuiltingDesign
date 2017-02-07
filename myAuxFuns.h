@@ -9,4 +9,4 @@
 using namespace std;
 
 int load_setting(string inFile, string * specimenFile, string * tileSetFile, int * nT, int * nO, int * nSample, double ** sampleCoords );
-rgbArray * merge_samples(rgbArray * pS1, rgbArray * pS2, int nO);
+rgbArray * merge_samples(rgbArray * pS1, rgbArray * pS2, int nO, int nM);

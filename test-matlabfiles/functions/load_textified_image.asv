@@ -1,0 +1,4 @@
+function load_textified_image()
+% LOAD_TEXTIFIED_IMAGE opens standard image file and produces its textified
+% version
+end

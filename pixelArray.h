@@ -25,5 +25,7 @@ public:
 	void save_textified_image(std::string outFile);
 	void load_binary_image(std::string inFile);
 	void save_binary_image(std::string outFile);
+	void load_BMP(std::string inFile);
+	void save_BMP(std::string outFile);
 };
 

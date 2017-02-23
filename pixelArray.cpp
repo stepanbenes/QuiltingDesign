@@ -110,3 +110,70 @@ void pixelArray::save_textified_image(std::string outFile)
 	outF.close();
 
 }
+
+void pixelArray::load_binary_image(std::string inFile)
+{
+	int auxInt = 0;
+	uint8_t val1 = 0;
+	uint8_t val2 = 0;
+	uint8_t val3 = 0;
+	std::ifstream inF;
+	inF.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+
+	// Read textified jpeg file
+	try {
+		inF.open(inFile, std::ios::binary);
+	}
+	catch (std::ios_base::failure& inErr) {
+		std::cerr << "The requested input file probably doesn't exist. System error: " << inErr.what() << std::endl;
+	}
+	inF.read((char *)&auxInt, sizeof(int));
+	resolution[0] = auxInt;
+	inF.read((char *)&auxInt, sizeof(int));
+	resolution[1] = auxInt;
+	if (!data.empty()) {
+		std::cout << "Warning: Data vector is not empty. Loading new image will overwrite data." << std::endl;
+		data.clear();
+	}
+	inF.read((char *)&auxInt, sizeof(int));
+	nPixelValues = auxInt;
+	for (int i = 0; i < resolution[0] * resolution[1]; i++) {
+		if (nPixelValues == 1) {
+			inF.read((char *)&val1, sizeof(uint8_t));
+			val2 = val1;
+			val3 = val1;
+		}
+		else if (nPixelValues == 3) {
+			inF.read((char *)&val1, sizeof(uint8_t));
+			inF.read((char *)&val2, sizeof(uint8_t));
+			inF.read((char *)&val3, sizeof(uint8_t));
+		}
+		data.push_back(pixel((int)val1, (int)val2, (int)val3));
+	}
+	inF.close();
+}
+
+void pixelArray::save_binary_image(std::string outFile)
+{
+	std::ofstream outF;
+	outF.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+	std::vector<pixel>::const_iterator iD;
+	uint8_t auxInt = 0;
+
+	// Write output file 
+	try {
+		outF.open(outFile, std::ios::binary | std::ios::out );
+	}
+	catch (std::ios_base::failure& inErr) {
+		std::cerr << "The requested output file cannot be created. System error: " << inErr.what() << std::endl;
+	}
+	outF.write((char *)&resolution, 2 * sizeof(int));
+	outF.write((char *)&nPixelValues, sizeof(int));
+	for (iD = data.begin(); iD != data.end(); ++iD) {
+		for (int i = 0; i < nPixelValues; i++) {
+			auxInt = (uint8_t)iD->get_val(i);
+			outF.write((char *)&auxInt, sizeof(uint8_t));
+		}
+	}
+	outF.close();
+}

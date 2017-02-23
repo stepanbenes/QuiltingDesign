@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <fstream>
+#include <cstdint> 
 #include "pixel.h"
 
 class pixelArray
@@ -22,5 +23,7 @@ public:
 	void set_pixel_at(pixel & inPixel, int iCoord, int jCoord);
 	void load_textified_image(std::string inFile);
 	void save_textified_image(std::string outFile);
+	void load_binary_image(std::string inFile);
+	void save_binary_image(std::string outFile);
 };
 

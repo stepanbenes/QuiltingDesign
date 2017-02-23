@@ -2,6 +2,7 @@
 #include <sstream>
 #include <string>
 #include <cmath>
+#include <cstdint> 
 #include "myAuxFuns.h"
 #include "rgbArray.h"
 //#include "rgbSpecimen.h"
@@ -22,8 +23,13 @@ int main()
 	pixel voxB(1, 3, 5);
 	pixel voxC,voxD;
 	pixelArray specimen("test-iofiles/_specimen.tpg");
+	//uint8_t myUint8Var;
+	//char myCharVar;
+	//int myIntVar;
 
 	specimen.load_textified_image("test-iofiles/_specimen.tpg");
+	specimen.save_binary_image("test-iofiles/_specimen2.bim");
+	specimen.load_binary_image("test-iofiles/_specimen2.bim");
 	specimen.save_textified_image("test-iofiles/_specimen2.tpg");
 
 	voxD = voxB;
@@ -31,6 +37,7 @@ int main()
 	voxD = voxA;
 	voxC = voxA + voxB;
 	cout << (voxA - voxD) << endl;
+
 	
 	cout << "Testing overloaded functions" << endl;
 	cout << "VoxA = " << voxA << endl;

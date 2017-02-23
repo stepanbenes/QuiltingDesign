@@ -31,6 +31,10 @@ int main()
 	specimen.save_binary_image("test-iofiles/_specimen2.bim");
 	specimen.load_binary_image("test-iofiles/_specimen2.bim");
 	specimen.save_textified_image("test-iofiles/_specimen2.tpg");
+	specimen.load_textified_image("test-iofiles/_specimen2.tpg");
+	specimen.save_BMP("test-iofiles/_specimen2.bmp");
+	specimen.load_BMP("test-iofiles/_specimen2.bmp");
+	specimen.save_textified_image("test-iofiles/_specimen3.tpg");
 
 	voxD = voxB;
 	voxA.set_val(2, 4, 6);

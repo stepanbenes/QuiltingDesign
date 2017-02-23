@@ -1,4 +1,5 @@
 #include "pixelArray.h"
+#include "EasyBMP.h"
 
 pixelArray::pixelArray()
 {
@@ -9,7 +10,7 @@ pixelArray::pixelArray(int inResolution[2])
 	resolution[0] = inResolution[0];
 	resolution[1] = inResolution[1];
 	nPixelValues = 3;
-	data.reserve( resolution[0]*resolution[1] );
+	data.reserve(resolution[0] * resolution[1]);
 }
 
 pixelArray::pixelArray(std::string inFile)
@@ -23,7 +24,7 @@ pixelArray::~pixelArray()
 
 int pixelArray::convert_IJ_indices(int iCoord, int jCoord)
 {
-	return (iCoord*resolution[1]+jCoord);
+	return (iCoord*resolution[1] + jCoord);
 }
 
 int pixelArray::get_value_at(int iCoord, int jCoord, int iV)
@@ -162,7 +163,7 @@ void pixelArray::save_binary_image(std::string outFile)
 
 	// Write output file 
 	try {
-		outF.open(outFile, std::ios::binary | std::ios::out );
+		outF.open(outFile, std::ios::binary | std::ios::out);
 	}
 	catch (std::ios_base::failure& inErr) {
 		std::cerr << "The requested output file cannot be created. System error: " << inErr.what() << std::endl;
@@ -176,4 +177,66 @@ void pixelArray::save_binary_image(std::string outFile)
 		}
 	}
 	outF.close();
+}
+
+void pixelArray::load_BMP(std::string inFile)
+{
+	if (!data.empty()) {
+		std::cout << "Warning: Data vector is not empty. Loading new image will overwrite data." << std::endl;
+		data.clear();
+	}
+
+	BMP bmp;
+	bmp.ReadFromFile(inFile.c_str());
+
+	resolution[0] = bmp.TellWidth();
+	resolution[1] = bmp.TellHeight();
+	nPixelValues = 3;
+	for (int j = 0; j < resolution[1]; j++)
+	{
+		for (int i = 0; i < resolution[0]; i++)
+		{
+			RGBApixel rgbaPixel = bmp.GetPixel(i, j);
+			data.push_back(pixel((int)rgbaPixel.Red, (int)rgbaPixel.Green, (int)rgbaPixel.Blue));
+		}
+	}
+}
+
+void pixelArray::save_BMP(std::string outFile)
+{
+	BMP output;
+	output.SetSize(resolution[0], resolution[1]);
+	int index;
+	std::vector<pixel>::const_iterator iD;
+	if (nPixelValues == 1)
+	{
+		output.SetBitDepth(8);
+
+		for (iD = data.begin(), index = 0; iD != data.end(); ++iD, ++index)
+		{
+			RGBApixel rgbaPixel;
+			ebmpBYTE value = (ebmpBYTE)iD->get_val(0);
+			rgbaPixel.Red = value;
+			rgbaPixel.Green = value;
+			rgbaPixel.Blue = value;
+			rgbaPixel.Alpha = 0;
+			output.SetPixel(index % resolution[0], index / resolution[0], rgbaPixel);
+		}
+	}
+	else if (nPixelValues == 3)
+	{
+		output.SetBitDepth(24);
+
+		for (iD = data.begin(), index = 0; iD != data.end(); ++iD, ++index)
+		{
+			RGBApixel rgbaPixel;
+			rgbaPixel.Red = (ebmpBYTE)iD->get_val(0);
+			rgbaPixel.Green = (ebmpBYTE)iD->get_val(1);
+			rgbaPixel.Blue = (ebmpBYTE)iD->get_val(2);
+			rgbaPixel.Alpha = 0;
+			output.SetPixel(index % resolution[0], index / resolution[0], rgbaPixel);
+		}
+	}
+
+	output.WriteToFile(outFile.c_str());
 }

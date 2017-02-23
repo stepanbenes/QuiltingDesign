@@ -110,6 +110,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="EasyBMP.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="myAuxFuns.cpp" />
     <ClCompile Include="pixelArray.cpp" />
@@ -118,6 +119,10 @@
     <ClCompile Include="pixel.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="EasyBMP.h" />
+    <ClInclude Include="EasyBMP_BMP.h" />
+    <ClInclude Include="EasyBMP_DataStructures.h" />
+    <ClInclude Include="EasyBMP_VariousBMPutilities.h" />
     <ClInclude Include="myAuxFuns.h" />
     <ClInclude Include="pixelArray.h" />
     <ClInclude Include="rgbArray.h" />

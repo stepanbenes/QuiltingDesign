@@ -1,3 +1,5 @@
+#include <fstream>
+#include <cstdint> 
 #include "pixelArray.h"
 #include "EasyBMP.h"
 
@@ -9,6 +11,14 @@ pixelArray::pixelArray(int inResolution[2])
 {
 	resolution[0] = inResolution[0];
 	resolution[1] = inResolution[1];
+	nPixelValues = 3;
+	data.reserve(resolution[0] * resolution[1]);
+}
+
+pixelArray::pixelArray(int iResolution, int jResolution)
+{
+	resolution[0] = iResolution;
+	resolution[1] = jResolution;
 	nPixelValues = 3;
 	data.reserve(resolution[0] * resolution[1]);
 }
@@ -29,12 +39,12 @@ int pixelArray::convert_IJ_indices(int iCoord, int jCoord)
 
 int pixelArray::get_value_at(int iCoord, int jCoord, int iV)
 {
-	return (data.at(convert_IJ_indices(iCoord, jCoord))).get_val(iV);
+	return (int)(data.at(convert_IJ_indices(iCoord, jCoord))).get_val(iV);
 }
 
 void pixelArray::set_values_at(int v1, int v2, int v3, int iCoord, int jCoord)
 {
-	(data.at(convert_IJ_indices(iCoord, jCoord))).set_val(v1, v2, v3);
+	data.at(convert_IJ_indices(iCoord, jCoord)).set_val(v1, v2, v3);
 }
 
 pixel pixelArray::get_pixel_at(int iCoord, int jCoord)
@@ -105,7 +115,7 @@ void pixelArray::save_textified_image(std::string outFile)
 	outF << std::endl;
 	for (iD = data.begin(); iD != data.end(); ++iD) {
 		for (int i = 0; i < nPixelValues; i++) {
-			outF << iD->get_val(i) << std::endl;
+			outF << (int)iD->get_val(i) << std::endl;
 		}
 	}
 	outF.close();

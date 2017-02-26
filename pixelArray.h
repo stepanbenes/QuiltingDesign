@@ -1,19 +1,18 @@
 #pragma once
 #include <vector>
 #include <string>
-#include <fstream>
-#include <cstdint> 
 #include "pixel.h"
 
 class pixelArray
 {
 private:
 	int resolution[2] = { 0, 0 };		// Number of pixels in i- and j-direction
-	int nPixelValues = 0;				// Distinguish between RGB and grayscale input/output
+	int nPixelValues = 0;				// Distinguish between RGB and grayscale input/output (OBSOLETE)
 	std::vector<pixel> data;
 public:
 	pixelArray();
-	pixelArray(int inResolution[2]);
+	pixelArray(int inResolution[2]); 
+	pixelArray(int iResolution, int jResolution);
 	pixelArray(std::string inFile);
 	~pixelArray();
 	int convert_IJ_indices(int iCoord, int jCoord);

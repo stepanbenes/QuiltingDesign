@@ -5,13 +5,16 @@
 #include <cstdint> 
 #include <fstream>
 #include <streambuf>
+#include <limits>
+#include <stdexcept>
 #include "myAuxFuns.h"
-#include "rgbArray.h"
+//#include "rgbArray.h"
 //#include "rgbSpecimen.h"
-#include "tileSet.h"
+//#include "tileSet.h"
 #include "pixel.h"
 #include "pixelArray.h"
-#include "picojson.h"
+#include "wangTile.h"
+#include "wangSet.h"
 
 #define DEBUG 1		// Define DEBUG macro such that certain parts are neglected or printed (set 0 for release)
 
@@ -22,45 +25,27 @@
 // NOTE Decide whether to allow non-integer sample origins
 // NOTE Change rgbArray into more general imgArray capable of handling both grayscale and RGB
 
-int main(int argc, char * argv[])
+int main(int argc, char * argv[]) throw(...)
 {
-	pixel voxA;
-	pixel voxB(1, 3, 5);
-	pixel voxC,voxD;
-	pixelArray specimen("test-iofiles/_specimen.tpg");
+	pixelArray specimen;
 	//uint8_t myUint8Var;
 	//char myCharVar;
 	//int myIntVar;
-	string inputJSONfile = "test-iofiles/_specimen.tpg";
+	string inputJSONfile     = "test-iofiles/_specimen.tpg";
 	string inputSpecimenFile = "test-iofiles/_specimen.tpg";
-	string outputFolder = "test-iofiles/";
+	string outputFolder      = "test-iofiles/";
+	const string sampleStencil = "sample";
+	const string sampleSuffix  = ".bmp";
+	const string tileStencil   = "tile";
+	const string tileSuffix    = ".bmp";
+	wangSet tileSet;
 
+	struct parameters {
+		int nS = 0;
+		int sampleOverlap = 0;
+		int tileSize = 0;
+	} params;
 
-	// test json
-	std::ifstream JSONfile("test-iofiles/muLib_ImageInput.json");
-	std::string JSONstring( (std::istreambuf_iterator<char>(JSONfile)), std::istreambuf_iterator<char>());
-
-	std::string json = JSONstring;
-	picojson::value v;
-	std::string err = picojson::parse(v, json);
-	if (!err.empty()) {
-		std::cerr << err << std::endl;
-	}
-
-
-	// check if the type of the value is "object"
-	if (!v.is<picojson::object>()) {
-		std::cerr << "JSON is not an object" << std::endl;
-		exit(2);
-	}
-
-	// obtain a const reference to the map, and print the contents
-	const picojson::value::object& obj = v.get<picojson::object>();
-	for (picojson::value::object::const_iterator i = obj.begin();
-	i != obj.end();
-		++i) {
-		std::cout << i->first << ": " << i->second.to_str() << std::endl;
-	}
 
 	// Check input parameters
 	if (argc != 3) {
@@ -68,54 +53,49 @@ int main(int argc, char * argv[])
 		std::cout << "			[1] absolute path to the JSON input file;" << std::endl;
 		std::cout << "			[2] absolute path to an input BMP image;" << std::endl;
 		std::cout << "			[3] an absolute path to the output folder." << std::endl;
-		#if DEBUG == 1
-				// With DEBUG macro, use predefined input/output folders/files
-				std::cout << "In DEBUG mode, using default parameters: " << std::endl;
-		#else
-				return 1;
-		#endif
+#if DEBUG == 1
+		// With DEBUG macro, use predefined input/output folders/files
+		std::cout << "In DEBUG mode, script uses default I/O files..." << std::endl;
+#else
+		return 1;
+#endif
 	}
 	else {
 		inputJSONfile = (string)argv[1];
 		inputSpecimenFile = (string)argv[2];
 		outputFolder = (string)argv[3];
-
 	}
 
-	// Try JSON parsing
-	
-	std::cout << "Press any key to abort the program.";
-	std::cin.get();
+
+	// Load setting from JSON file
+	load_JSON_setting(inputJSONfile, &tileSet);
+
+	std::cout << tileSet << std::endl;
 
 
-
-
-	return 0;
-
-
+	// Test image loading
 	//specimen.load_textified_image("test-iofiles/_specimen.tpg");
 	//specimen.save_binary_image("test-iofiles/_specimen2.bim");
 	//specimen.load_binary_image("test-iofiles/_specimen2.bim");
 	//specimen.save_textified_image("test-iofiles/_specimen2.tpg");
 	//specimen.load_textified_image("test-iofiles/_specimen2.tpg");
-	//specimen.save_BMP("test-iofiles/_specimen2.bmp");
-	//specimen.load_BMP("test-iofiles/_specimen2.bmp");
+	//specimen.save_BMP("test-iofiles/_specimen3.bmp");
+	//specimen.load_BMP("test-iofiles/_specimen3.bmp");
 	//specimen.save_textified_image("test-iofiles/_specimen3.tpg");
 
-	//voxD = voxB;
-	//voxA.set_val(2, 4, 6);
-	//voxD = voxA;
-	//voxC = voxA + voxB;
-	//cout << (voxA - voxD) << endl;
 
-	//
-	//cout << "Testing overloaded functions" << endl;
-	//cout << "VoxA = " << voxA << endl;
-	//cout << "VoxB = " << voxB << endl;
-	//cout << "VoxC = " << voxC << endl;
-	//cout << "VoxD = " << voxD << endl;
 
-	//pixel voxA + voxB;
+#if DEBUG == 1
+	std::cout << "Press any key to abort the program...";
+	std::cin.get();
+#endif
+
+	return 0;
+
+
+
+
+
 
 	//// Define input file name
 	//string settingsFile = "test-iofiles/_allSettings.set"; 

@@ -1,4 +1,79 @@
+#include <iostream>
+#include <fstream>
+#include <algorithm>
+#include <cmath>
+#include "wangTile.h"
+#include "wangSet.h"
+#include "picojson.h"
 #include "myAuxFuns.h"
+
+using namespace std;
+
+void load_JSON_setting(std::string inFile, wangSet * tileSet) 
+{
+	// Load script setting provided in JSON file
+
+	// Load input string
+	std::ifstream JSONfile("test-iofiles/muLib_ImageInput.json");
+	std::string JSONstring((std::istreambuf_iterator<char>(JSONfile)), std::istreambuf_iterator<char>());
+
+	// Parse buffer string
+	picojson::value JSONvalue;
+	std::string JSONerr = picojson::parse(JSONvalue, JSONstring);
+	if (!JSONerr.empty()) {
+		//throw std::exception("Loaded JSON string couldn't be parsed.");
+	}
+
+	// Test parsed JSON values	
+	if (!JSONvalue.is<picojson::object>()) {
+		//throw std::exception("JSON is not an object.");
+	}
+	if ( !(JSONvalue.contains("tileSize") && JSONvalue.contains("sampleOverlap") && JSONvalue.contains("samples") && JSONvalue.contains("tiles")) ) {
+		//throw std::exception("Loaded JSON doesn't contain all requried fields.");
+	}
+
+	std::cout << "Identified JSON values:" << std::endl;
+	std::cout << "    tileSize:      " << JSONvalue.get("tileSize").get<double>() << std::endl;
+	std::cout << "    sampleOverlap: " << JSONvalue.get("sampleOverlap").get<double>() << std::endl;
+
+	// Load tiles data
+	picojson::array tilesArray = JSONvalue.get("tiles").get<picojson::array>();
+
+	int nTiles = tilesArray.size();
+	tileSet->set_nTiles(nTiles);
+	std::cout << "    # tiles:       " << nTiles << std::endl;
+
+	for (picojson::array::const_iterator it = tilesArray.begin(); it != tilesArray.end(); it++) {
+		int auxID = 0;
+		int auxCodes[4] = { 0,0,0,0 };
+		auxID = (int)it->get("id").get<double>();
+		for (int i = 0; i < 4; i++) {
+			auxCodes[i] = (int)it->get("codes").get<picojson::array>()[i].get<double>();
+		} 
+		wangTile auxTile(auxID, auxCodes);
+		tileSet->add_tile(auxTile);
+
+		std::cout << "        Tile " << it->get("id").get<double>() << ": [ "
+			<< it->get("codes").get<picojson::array>()[0] << ", "
+			<< it->get("codes").get<picojson::array>()[1] << ", "
+			<< it->get("codes").get<picojson::array>()[2] << ", "
+			<< it->get("codes").get<picojson::array>()[3] << " ]"
+			<< std::endl;
+
+		std::cout << auxTile << std::endl;
+		std::cout << tileSet->get_tile_at(auxID) << std::endl;
+	}
+
+	picojson::array sampleArray = JSONvalue.get("samples").get<picojson::array>();
+	std::cout << "    # samples:       " << sampleArray.size() << std::endl;
+	for (picojson::array::const_iterator it = sampleArray.begin(); it != sampleArray.end(); it++) {
+		std::cout << "        Sample " << it - sampleArray.begin() << ": [ "
+			<< it->get("originX").get<double>() << ", "
+			<< it->get("originY").get<double>() << " ]"
+			<< std::endl;
+	}
+
+};
 
 int load_setting(string inFile, string * specimenFile, string * tileSetFile, int * nT, int * nO, int * nSample, double ** sampleCoords)
 {

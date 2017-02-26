@@ -118,6 +118,8 @@
     <ClCompile Include="rgbArray.cpp" />
     <ClCompile Include="tileSet.cpp" />
     <ClCompile Include="pixel.cpp" />
+    <ClCompile Include="wangSet.cpp" />
+    <ClCompile Include="wangTile.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EasyBMP.h" />
@@ -129,6 +131,8 @@
     <ClInclude Include="rgbArray.h" />
     <ClInclude Include="tileSet.h" />
     <ClInclude Include="pixel.h" />
+    <ClInclude Include="wangSet.h" />
+    <ClInclude Include="wangTile.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -7,14 +7,16 @@
 #include "picojson.h"
 #include "myAuxFuns.h"
 
+#define LOC_DEBUG 0
+
 using namespace std;
 
-void load_JSON_setting(std::string inFile, wangSet * tileSet) 
+void load_JSON_setting(std::string inFile, wangSet & tileSet, parameters & inParameters, std::vector<sample> & inSamples)
 {
 	// Load script setting provided in JSON file
 
 	// Load input string
-	std::ifstream JSONfile("test-iofiles/muLib_ImageInput.json");
+	std::ifstream JSONfile(inFile);
 	std::string JSONstring((std::istreambuf_iterator<char>(JSONfile)), std::istreambuf_iterator<char>());
 
 	// Parse buffer string
@@ -32,39 +34,50 @@ void load_JSON_setting(std::string inFile, wangSet * tileSet)
 		//throw std::exception("Loaded JSON doesn't contain all requried fields.");
 	}
 
-	std::cout << "Identified JSON values:" << std::endl;
-	std::cout << "    tileSize:      " << JSONvalue.get("tileSize").get<double>() << std::endl;
-	std::cout << "    sampleOverlap: " << JSONvalue.get("sampleOverlap").get<double>() << std::endl;
+	// Load all data
+	inParameters.nT = (int)JSONvalue.get("tileSize").get<double>();
+	inParameters.nO = (int)JSONvalue.get("sampleOverlap").get<double>();
+	inParameters.nS = inParameters.nT + inParameters.nO - 1;					// Define sample edge size in terms of ROTATED pixels
 
-	// Load tiles data
 	picojson::array tilesArray = JSONvalue.get("tiles").get<picojson::array>();
-
-	int nTiles = tilesArray.size();
-	tileSet->set_nTiles(nTiles);
-	std::cout << "    # tiles:       " << nTiles << std::endl;
-
+	int nTiles = (int)tilesArray.size();
+	tileSet.set_nTiles(nTiles);
 	for (picojson::array::const_iterator it = tilesArray.begin(); it != tilesArray.end(); it++) {
 		int auxID = 0;
 		int auxCodes[4] = { 0,0,0,0 };
 		auxID = (int)it->get("id").get<double>();
 		for (int i = 0; i < 4; i++) {
 			auxCodes[i] = (int)it->get("codes").get<picojson::array>()[i].get<double>();
-		} 
+		}
 		wangTile auxTile(auxID, auxCodes);
-		tileSet->add_tile(auxTile);
+		tileSet.add_tile(auxTile);
+	}
 
+	picojson::array sampleArray = JSONvalue.get("samples").get<picojson::array>();
+	for (picojson::array::const_iterator it = sampleArray.begin(); it != sampleArray.end(); it++) {
+		inSamples.push_back( sample((int)it->get("originX").get<double>(), (int)it->get("originY").get<double>(), inParameters.nS) );
+	}
+
+
+	// Print all data (only in LOC_DEBUG mode)
+#if LOC_DEBUG == 1
+
+	std::cout << "Identified JSON values:" << std::endl;
+	std::cout << "    tileSize:      " << (int)JSONvalue.get("tileSize").get<double>() << std::endl;
+	std::cout << "    sampleOverlap: " << (int)JSONvalue.get("sampleOverlap").get<double>() << std::endl;
+
+	//picojson::array tilesArray = JSONvalue.get("tiles").get<picojson::array>();
+	std::cout << "    # tiles:       " << tilesArray.size() << std::endl;
+	for (picojson::array::const_iterator it = tilesArray.begin(); it != tilesArray.end(); it++) {
 		std::cout << "        Tile " << it->get("id").get<double>() << ": [ "
 			<< it->get("codes").get<picojson::array>()[0] << ", "
 			<< it->get("codes").get<picojson::array>()[1] << ", "
 			<< it->get("codes").get<picojson::array>()[2] << ", "
 			<< it->get("codes").get<picojson::array>()[3] << " ]"
 			<< std::endl;
-
-		std::cout << auxTile << std::endl;
-		std::cout << tileSet->get_tile_at(auxID) << std::endl;
 	}
 
-	picojson::array sampleArray = JSONvalue.get("samples").get<picojson::array>();
+	//picojson::array sampleArray = JSONvalue.get("samples").get<picojson::array>();
 	std::cout << "    # samples:       " << sampleArray.size() << std::endl;
 	for (picojson::array::const_iterator it = sampleArray.begin(); it != sampleArray.end(); it++) {
 		std::cout << "        Sample " << it - sampleArray.begin() << ": [ "
@@ -73,30 +86,32 @@ void load_JSON_setting(std::string inFile, wangSet * tileSet)
 			<< std::endl;
 	}
 
+#endif
+
 };
 
-int load_setting(string inFile, string * specimenFile, string * tileSetFile, int * nT, int * nO, int * nSample, double ** sampleCoords)
-{
-	ifstream inF;
-	double * auxPtr = nullptr;
-
-	inF.open(inFile);
-	inF >> *tileSetFile;
-	inF >> *specimenFile;
-	inF >> *nT;
-	inF >> *nO;
-	inF >> *nSample;
-
-	auxPtr = new double[(*nSample)*2];
-	for (int i = 0; i < *nSample; i++) {
-		inF >> auxPtr[2 * i] >> auxPtr[2 * i + 1];
-	}
-	*sampleCoords = auxPtr;
-
-	inF.close();
-
-	return 0;
-}
+//int load_setting(string inFile, string * specimenFile, string * tileSetFile, int * nT, int * nO, int * nSample, double ** sampleCoords)
+//{
+//	ifstream inF;
+//	double * auxPtr = nullptr;
+//
+//	inF.open(inFile);
+//	inF >> *tileSetFile;
+//	inF >> *specimenFile;
+//	inF >> *nT;
+//	inF >> *nO;
+//	inF >> *nSample;
+//
+//	auxPtr = new double[(*nSample)*2];
+//	for (int i = 0; i < *nSample; i++) {
+//		inF >> auxPtr[2 * i] >> auxPtr[2 * i + 1];
+//	}
+//	*sampleCoords = auxPtr;
+//
+//	inF.close();
+//
+//	return 0;
+//}
 
 rgbArray * merge_samples(rgbArray * pS1, rgbArray * pS2, int nO, int nM)
 {

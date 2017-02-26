@@ -15,6 +15,7 @@
 #include "pixelArray.h"
 #include "wangTile.h"
 #include "wangSet.h"
+#include "sample.h"
 
 #define DEBUG 1		// Define DEBUG macro such that certain parts are neglected or printed (set 0 for release)
 
@@ -27,24 +28,17 @@
 
 int main(int argc, char * argv[]) throw(...)
 {
-	pixelArray specimen;
-	//uint8_t myUint8Var;
-	//char myCharVar;
-	//int myIntVar;
-	string inputJSONfile     = "test-iofiles/_specimen.tpg";
-	string inputSpecimenFile = "test-iofiles/_specimen.tpg";
+	string inputJSONfile     = "test-iofiles/muLib_ImageInput.json";
+	string inputSpecimenFile = "test-iofiles/_specimen.bmp";
 	string outputFolder      = "test-iofiles/";
 	const string sampleStencil = "sample";
 	const string sampleSuffix  = ".bmp";
 	const string tileStencil   = "tile";
 	const string tileSuffix    = ".bmp";
 	wangSet tileSet;
-
-	struct parameters {
-		int nS = 0;
-		int sampleOverlap = 0;
-		int tileSize = 0;
-	} params;
+	pixelArray specimen;
+	parameters myParams;					// Structure encapsulating settings (defined in myAuxFuns.h)
+	std::vector<sample> allSamples;			// Vector containing loaded samples
 
 
 	// Check input parameters
@@ -68,9 +62,28 @@ int main(int argc, char * argv[]) throw(...)
 
 
 	// Load setting from JSON file
-	load_JSON_setting(inputJSONfile, &tileSet);
+	load_JSON_setting(inputJSONfile, tileSet, myParams, allSamples);
 
-	std::cout << tileSet << std::endl;
+	// Load specimen data
+	specimen.load_BMP(inputSpecimenFile);
+
+	// Extract samples
+	for (std::vector<sample>::iterator i = allSamples.begin(); i != allSamples.end(); ++i) {
+		
+		i->acquire_data_from_specimen(specimen);
+
+		std::string fileName = "";
+		fileName += outputFolder;
+		fileName += sampleStencil;
+		fileName += std::to_string(i-allSamples.begin());
+		fileName += sampleSuffix;
+		std::cout << fileName << std::endl;
+		i->save_BMP(fileName);
+	}
+
+
+	std::cout << "nT: " << myParams.nT << ", nO: " << myParams.nO << ", nS: " << myParams.nS << std::endl;
+	std::cout << allSamples.size() << std::endl;
 
 
 	// Test image loading

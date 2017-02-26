@@ -52,6 +52,11 @@ pixel pixelArray::get_pixel_at(int iCoord, int jCoord)
 	return data.at(convert_IJ_indices(iCoord, jCoord));
 }
 
+void pixelArray::add_pixel(pixel & inPixel)
+{
+	data.push_back(inPixel);
+}
+
 void pixelArray::set_pixel_at(pixel & inPixel, int iCoord, int jCoord)
 {
 	data.at(convert_IJ_indices(iCoord, jCoord)) = inPixel;
@@ -249,4 +254,76 @@ void pixelArray::save_BMP(std::string outFile)
 	}
 
 	output.WriteToFile(outFile.c_str());
+}
+
+pixelArray pixelArray::extract_patch(double o[2], int s[2], double a, int d) throw(...)
+{
+	// Extract a patch of pixel Array with local coordinates i'-j' defined with
+	//		{i;j} = {o[0];o[1]} + a * R * {i';j'},
+	// where R is a rotation matrix for the angle n * pi/2, n being an integer.
+	// Transformation is in i-j coordinate system with (0,0) in the top left corner,
+	// i possitive top down and j from left to right. Integer d governs direction of 
+	// rotation (d = 1 counter clockwise; d = -1 clockwise). 
+
+
+	// Check for outlying sample corners
+	if (d == 1) {
+		double minI = o[0] + a * (sqrt(2.0) / 2.0 * 0 - d * sqrt(2.0) / 2.0 * s[1]);
+		double maxI = o[0] + a * (sqrt(2.0) / 2.0 * s[0] - d * sqrt(2.0) / 2.0 * 0);
+		double minJ = o[1] + a * (d * sqrt(2.0) / 2.0 * 0 + sqrt(2.0) / 2.0 * 0);
+		double maxJ = o[1] + a * (d * sqrt(2.0) / 2.0 * s[0] + sqrt(2.0) / 2.0 * s[1]);
+
+		if ( minI<0 || maxI>resolution[0] || minJ<0 || maxJ>resolution[1]) {
+			throw std::exception("Sample origin leads to sample defined out of region.");
+		}
+	}
+	else if(d == -1) {
+		double minI = o[0] + a * (sqrt(2.0) / 2.0 * 0 - d * sqrt(2.0) / 2.0 * 0);
+		double maxI = o[0] + a * (sqrt(2.0) / 2.0 * s[0] - d * sqrt(2.0) / 2.0 * s[1]);
+		double minJ = o[1] + a * (d * sqrt(2.0) / 2.0 * s[0] + sqrt(2.0) / 2.0 * 0);
+		double maxJ = o[1] + a * (d * sqrt(2.0) / 2.0 * 0 + sqrt(2.0) / 2.0 * s[1]);
+
+		if (minI<0 || maxI>resolution[0] || minJ<0 || maxJ>resolution[1]) {
+			throw std::exception("Sample origin leads to sample defined out of region.");
+		}
+	}
+	else {
+		std::cerr << "The fourth input parameter d must be either -1 or 1." << std::endl;
+		throw std::exception("The fourth input parameter d must be either -1 or 1.");
+	}
+	
+	pixelArray outArray(s);
+
+	double iOd = 0.0;		// Double version of original coordinates
+	double jOd = 0.0;		// Double version of oridinal coordinates
+	int iOn = 0;			// Int version of original coordinates
+	int jOn = 0;			// Int version of original coordinates
+	double iDiff = 0.0;		// Difference between double and int
+	double jDiff = 0.0;		// Difference between double and int
+	pixel auxPixel;			// Auxiliary pixel for interpolation
+
+	for (int iN = 0; iN < s[0]; iN++) {
+		for (int jN = 0; jN < s[1]; jN++) {
+			// NOTE that the transformation is from new to old coordinate system (!), hence the inverse rotation matrix
+			iOd = o[0] + a * (sqrt(2.0) / 2.0 * iN - d * sqrt(2.0) / 2.0 * jN);
+			jOd = o[1] + a * (d * sqrt(2.0) / 2.0 * iN + sqrt(2.0) / 2.0 * jN);
+
+			iOn = (int)floor(iOd);
+			jOn = (int)floor(jOd);
+
+			iDiff = iOd - iOn;
+			jDiff = jOd - jOn;
+
+			auxPixel.set_interpolated_val(iDiff, jDiff, get_pixel_at(iOn, jOn), get_pixel_at(iOn, jOn + 1), get_pixel_at(iOn + 1, jOn), get_pixel_at(iOn + 1, jOn + 1) );
+			outArray.add_pixel(auxPixel);
+		}
+	}
+
+
+	return outArray;
+}
+
+std::vector<pixel> pixelArray::get_data_vector()
+{
+	return data;
 }

@@ -1,12 +1,16 @@
 #pragma once
-#include <iostream>
 #include <string>
-#include <fstream>
-#include <algorithm>
-#include <cmath>
 #include "rgbArray.h"
+#include "wangSet.h"
+#include "sample.h"
 
-using namespace std;
+struct parameters {
+	int nT = 0;					// Define length of tile width
+	int nO = 0;					// Defines width of sample overlap
+	int nS = 0;					// Define length of sample width
+	double tileScale = 2.0 / sqrt(2.0);
+};
 
-int load_setting(string inFile, string * specimenFile, string * tileSetFile, int * nT, int * nO, int * nSample, double ** sampleCoords );
-rgbArray * merge_samples(rgbArray * pS1, rgbArray * pS2, int nO, int nM);
+void load_JSON_setting(std::string inFile, wangSet & tileSet, parameters & inParameters, std::vector<sample> & inSamples);
+//int load_setting(std::string inFile, std::string * specimenFile, std::string * tileSetFile, int * nT, int * nO, int * nSample, double ** sampleCoords );
+//rgbArray * merge_samples(rgbArray * pS1, rgbArray * pS2, int nO, int nM);

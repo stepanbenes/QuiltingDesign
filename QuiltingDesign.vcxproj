@@ -81,6 +81,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <DisableLanguageExtensions>false</DisableLanguageExtensions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -110,15 +111,30 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="EasyBMP.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="myAuxFuns.cpp" />
+    <ClCompile Include="pixelArray.cpp" />
     <ClCompile Include="rgbArray.cpp" />
+    <ClCompile Include="sample.cpp" />
     <ClCompile Include="tileSet.cpp" />
+    <ClCompile Include="pixel.cpp" />
+    <ClCompile Include="wangSet.cpp" />
+    <ClCompile Include="wangTile.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="EasyBMP.h" />
+    <ClInclude Include="EasyBMP_BMP.h" />
+    <ClInclude Include="EasyBMP_DataStructures.h" />
+    <ClInclude Include="EasyBMP_VariousBMPutilities.h" />
     <ClInclude Include="myAuxFuns.h" />
+    <ClInclude Include="pixelArray.h" />
     <ClInclude Include="rgbArray.h" />
+    <ClInclude Include="sample.h" />
     <ClInclude Include="tileSet.h" />
+    <ClInclude Include="pixel.h" />
+    <ClInclude Include="wangSet.h" />
+    <ClInclude Include="wangTile.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -17,5 +17,6 @@ public:
 	uint8_t get_val(int ind) const;
 	pixel operator+(const pixel & addend);
 	double operator-(const pixel & subtrahend);
+	pixel operator*(double factor);
 	friend std::ostream& operator<<(std::ostream & out, const pixel & f);
 };

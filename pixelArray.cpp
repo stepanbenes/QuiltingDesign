@@ -206,6 +206,7 @@ void pixelArray::load_BMP(std::string inFile)
 
 	resolution[0] = bmp.TellWidth();
 	resolution[1] = bmp.TellHeight();
+	data.reserve(resolution[0]*resolution[1]);
 	nPixelValues = 3;
 	for (int j = 0; j < resolution[1]; j++)
 	{
@@ -220,7 +221,7 @@ void pixelArray::load_BMP(std::string inFile)
 void pixelArray::save_BMP(std::string outFile)
 {
 	BMP output;
-	output.SetSize(resolution[0], resolution[1]);
+	output.SetSize(resolution[1], resolution[0]);
 	int index;
 	std::vector<pixel>::const_iterator iD;
 	if (nPixelValues == 1)
@@ -235,7 +236,7 @@ void pixelArray::save_BMP(std::string outFile)
 			rgbaPixel.Green = value;
 			rgbaPixel.Blue = value;
 			rgbaPixel.Alpha = 0;
-			output.SetPixel(index % resolution[0], index / resolution[0], rgbaPixel);
+			output.SetPixel(index % resolution[1], index / resolution[1], rgbaPixel);
 		}
 	}
 	else if (nPixelValues == 3)
@@ -249,7 +250,7 @@ void pixelArray::save_BMP(std::string outFile)
 			rgbaPixel.Green = (ebmpBYTE)iD->get_val(1);
 			rgbaPixel.Blue = (ebmpBYTE)iD->get_val(2);
 			rgbaPixel.Alpha = 0;
-			output.SetPixel(index % resolution[0], index / resolution[0], rgbaPixel);
+			output.SetPixel(index % resolution[1], index / resolution[1], rgbaPixel);
 		}
 	}
 
@@ -321,6 +322,48 @@ pixelArray pixelArray::extract_patch(double o[2], int s[2], double a, int d) thr
 
 
 	return outArray;
+}
+
+pixelArray pixelArray::rotate_n90(int n)
+{
+	// Returns rgbArray rotated by n-times 90° anticlockwise
+	int newSize[2] = { resolution[0], resolution[1] };
+	int transVec[2] = { 0, 0 };
+	int rotMtrx[4] = { 1, 0, 0, 1 };
+
+	// Set transformation parameters
+	switch (n % 4) {
+	case 1:
+		newSize[0] = resolution[1]; newSize[1] = resolution[0];
+		transVec[0] = resolution[1] - 1; transVec[1] = 0;
+		rotMtrx[0] = 0; rotMtrx[1] = -1; rotMtrx[2] = 1; rotMtrx[3] = 0;
+		break;
+	case 2:
+		transVec[0] = resolution[0] - 1; transVec[1] = resolution[1] - 1;
+		rotMtrx[0] = -1; rotMtrx[1] = 0; rotMtrx[2] = 0; rotMtrx[3] = -1;
+		break;
+	case 3:
+		newSize[0] = resolution[1]; newSize[1] = resolution[0];
+		transVec[0] = 0; transVec[1] = resolution[0] - 1;
+		rotMtrx[0] = 0; rotMtrx[1] = 1; rotMtrx[2] = -1; rotMtrx[3] = 0;
+		break;
+	default:
+		break;
+	}
+
+	// Fill the new array
+	pixelArray rotArray(newSize);
+	int newI = 0;
+	int newJ = 0;
+	for (int i = 0; i < resolution[0]; i++) {
+		for (int j = 0; j < resolution[1]; j++) {
+			newI = transVec[0] + rotMtrx[0] * i + rotMtrx[1] * j;
+			newJ = transVec[1] + rotMtrx[2] * i + rotMtrx[3] * j;
+			rotArray.set_pixel_at(this->get_pixel_at(i, j), newI, newJ);
+		}
+	}
+
+	return rotArray;
 }
 
 std::vector<pixel> pixelArray::get_data_vector()

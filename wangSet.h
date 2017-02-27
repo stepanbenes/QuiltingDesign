@@ -14,6 +14,8 @@ public:
 	void set_nTiles(int inNt);
 	void add_tile(wangTile inTile);
 	wangTile get_tile_at(int tID);
+	void construct_tiles(std::vector<sample> & allSamples, int nO, int nT);
+	void save_tiles_BMP(std::string outputFolder, std::string tileStencil, std::string tileSuffix);
 	friend std::ostream& operator<<(std::ostream & out, const wangSet & s);
 };
 

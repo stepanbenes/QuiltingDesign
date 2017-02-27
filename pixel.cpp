@@ -87,6 +87,11 @@ double pixel::operator-(const pixel & subtrahend)
 	return sqrt(auxVal);
 }
 
+pixel pixel::operator*(double factor)
+{
+	return pixel( (int)(val[0]*factor), (int)(val[1]*factor), (int)(val[2]*factor) );
+}
+
 std::ostream& operator<<(std::ostream& out, const pixel& f)
 {
 	// Define insertion operator for auxiliary checks.

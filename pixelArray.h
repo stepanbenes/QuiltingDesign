@@ -28,6 +28,7 @@ public:
 	void load_BMP(std::string inFile);
 	void save_BMP(std::string outFile);
 	pixelArray extract_patch(double o[2], int s[2], double a, int d);
+	pixelArray rotate_n90(int n);
 	std::vector<pixel> get_data_vector();
 };
 

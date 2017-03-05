@@ -37,6 +37,12 @@ int pixelArray::convert_IJ_indices(int iCoord, int jCoord)
 	return (iCoord*resolution[1] + jCoord);
 }
 
+void pixelArray::get_resolution(int & resX, int & resY)
+{
+	resX = resolution[0];
+	resY = resolution[1];
+}
+
 int pixelArray::get_value_at(int iCoord, int jCoord, int iV)
 {
 	return (int)(data.at(convert_IJ_indices(iCoord, jCoord))).get_val(iV);

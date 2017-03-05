@@ -8,13 +8,11 @@
 #include <limits>
 #include <stdexcept>
 #include "myAuxFuns.h"
-//#include "rgbArray.h"
-//#include "rgbSpecimen.h"
-//#include "tileSet.h"
 #include "pixel.h"
 #include "pixelArray.h"
 #include "wangTile.h"
 #include "wangSet.h"
+#include "wangTiling.h"
 #include "sample.h"
 
 #define DEBUG 1		// Define DEBUG macro such that certain parts are neglected or printed (set 0 for release)
@@ -28,13 +26,14 @@
 
 int main(int argc, char * argv[]) throw(...)
 {
-	string inputJSONfile     = "test-iofiles/muLib_ImageInput.json";
-	string inputSpecimenFile = "test-iofiles/_specimen.bmp";
-	string outputFolder      = "test-iofiles/";
-	const string sampleStencil = "sample";
-	const string sampleSuffix  = ".bmp";
-	const string tileStencil   = "tile";
-	const string tileSuffix    = ".bmp";
+	std::string inputJSONfile     = "test-iofiles/muLib_ImageInput.json";
+	std::string inputSpecimenFile = "test-iofiles/_specimen.bmp";
+	std::string outputFolder      = "test-iofiles/";
+	std::string outputTilingImage = "test-iofiles/_tiling.bmp";
+	const std::string sampleStencil = "sample";
+	const std::string sampleSuffix  = ".bmp";
+	const std::string tileStencil   = "tile";
+	const std::string tileSuffix    = ".bmp";
 	wangSet tileSet;
 	pixelArray specimen;
 	parameters myParams;					// Structure encapsulating settings (defined in myAuxFuns.h)
@@ -55,9 +54,9 @@ int main(int argc, char * argv[]) throw(...)
 #endif
 	}
 	else {
-		inputJSONfile = (string)argv[1];
-		inputSpecimenFile = (string)argv[2];
-		outputFolder = (string)argv[3];
+		inputJSONfile = (std::string)argv[1];
+		inputSpecimenFile = (std::string)argv[2];
+		outputFolder = (std::string)argv[3];
 	}
 
 
@@ -84,6 +83,11 @@ int main(int argc, char * argv[]) throw(...)
 	// Construct tiles
 	tileSet.construct_tiles(allSamples, myParams.nO, myParams.nT);
 	tileSet.save_tiles_BMP(outputFolder, tileStencil, tileSuffix);
+
+	// Test tiling
+	wangTiling tiling = tileSet.give_stochastic_tiling(4, 3);
+	tileSet.construct_tiling_image(&tiling);
+	tiling.save_tiling_BMP(outputTilingImage);
 
 #if DEBUG == 1
 	std::cout << "Press any key to abort the program...";

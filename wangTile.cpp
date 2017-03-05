@@ -38,6 +38,11 @@ int wangTile::get_code(int iC) const
 	}
 }
 
+pixelArray wangTile::get_tile_image() const
+{
+	return imageData;
+}
+
 void wangTile::construct_tile_image(std::vector<sample> & allSamples, int nO, int nT)
 {
 	//

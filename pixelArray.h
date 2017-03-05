@@ -16,6 +16,7 @@ public:
 	pixelArray(std::string inFile);
 	~pixelArray();
 	int convert_IJ_indices(int iCoord, int jCoord);
+	void get_resolution(int & resX, int & resY);
 	int get_value_at(int iCoord, int jCoord, int iV);
 	void set_values_at(int v1, int v2, int v3, int iCoord, int jCoord);
 	pixel get_pixel_at(int iCoord, int jCoord);

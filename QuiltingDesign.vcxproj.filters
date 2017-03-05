@@ -21,12 +21,6 @@
     <ClCompile Include="myAuxFuns.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="rgbArray.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="tileSet.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="pixel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -45,15 +39,12 @@
     <ClCompile Include="sample.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="wangTiling.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="myAuxFuns.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="rgbArray.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="tileSet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="pixel.h">
@@ -81,6 +72,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="sample.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="wangTiling.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -6,7 +6,7 @@
 #include <fstream>
 #include <streambuf>
 #include <limits>
-#include <stdexcept>
+#include <exception>
 #include "myAuxFuns.h"
 #include "pixel.h"
 #include "pixelArray.h"
@@ -68,7 +68,14 @@ int main(int argc, char * argv[]) throw(...)
 
 	// Extract samples
 	for (std::vector<sample>::iterator i = allSamples.begin(); i != allSamples.end(); ++i) {
-		i->acquire_data_from_specimen(specimen);
+		try {
+			i->acquire_data_from_specimen(specimen);
+		}
+		catch(const std::exception & e){
+			std::cout << e.what() << std::endl;
+			std::cin.get();
+			return 1;
+		}
 #if DEBUG == 1
 		std::string fileName = "";
 		fileName += outputFolder;

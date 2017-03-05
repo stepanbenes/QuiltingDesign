@@ -1,5 +1,6 @@
 #include <fstream>
 #include <cstdint> 
+#include <exception>
 #include "pixelArray.h"
 #include "EasyBMP.h"
 
@@ -263,7 +264,7 @@ void pixelArray::save_BMP(std::string outFile)
 	output.WriteToFile(outFile.c_str());
 }
 
-pixelArray pixelArray::extract_patch(double o[2], int s[2], double a, int d) throw(...)
+pixelArray pixelArray::extract_patch(double o[2], int s[2], double a, int d)
 {
 	// Extract a patch of pixel Array with local coordinates i'-j' defined with
 	//		{i;j} = {o[0];o[1]} + a * R * {i';j'},

@@ -46,17 +46,20 @@ void pixelArray::get_resolution(int & resX, int & resY)
 
 int pixelArray::get_value_at(int iCoord, int jCoord, int iV)
 {
-	return (int)(data.at(convert_IJ_indices(iCoord, jCoord))).get_val(iV);
+	//return (int)(data.at(convert_IJ_indices(iCoord, jCoord))).get_val(iV);
+	return (int)(data[iCoord*resolution[1] + jCoord]).get_val(iV);
 }
 
 void pixelArray::set_values_at(int v1, int v2, int v3, int iCoord, int jCoord)
 {
-	data.at(convert_IJ_indices(iCoord, jCoord)).set_val(v1, v2, v3);
+	//data.at(convert_IJ_indices(iCoord, jCoord)).set_val(v1, v2, v3);
+	data[iCoord*resolution[1] + jCoord].set_val(v1, v2, v3);
 }
 
 pixel pixelArray::get_pixel_at(int iCoord, int jCoord)
 {
-	return data.at(convert_IJ_indices(iCoord, jCoord));
+	//return data.at(convert_IJ_indices(iCoord, jCoord));	
+	return data[iCoord*resolution[1] + jCoord];
 }
 
 void pixelArray::add_pixel(pixel & inPixel)

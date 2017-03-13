@@ -164,8 +164,8 @@ sample sample::merge_sample(sample * that, int nO, int nM)
 				newSample.set_pixel_at(that->get_pixel_at(i, j), i, offset + j);
 			}
 			else { // TODO Decide what to do with the seam pixels (averaged for now)
-				//newSample.set_pixel_at( pixel(0,0,0), i, offset + j);
-				newSample.set_pixel_at(this->get_pixel_at(i, offset + j)*0.5 + that->get_pixel_at(i, j)*0.5, i, offset + j);
+				newSample.set_pixel_at( pixel(255,0	,0), i, offset + j);
+				//newSample.set_pixel_at(this->get_pixel_at(i, offset + j)*0.5 + that->get_pixel_at(i, j)*0.5, i, offset + j);
 			}
 		}
 

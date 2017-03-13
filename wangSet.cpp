@@ -120,7 +120,8 @@ void wangSet::construct_tiling_image(wangTiling * inTiling)
 			locJ = j % resJ;
 			tID = inTiling->get_tileID_at(iTx, iTy);
 
-			tilImg.add_pixel( tiles.at(tID).get_tile_image().get_pixel_at(locI,locJ) );
+			//tilImg.add_pixel(tiles.at(tID).get_tile_image().get_pixel_at(locI, locJ));
+			tilImg.add_pixel( tiles[tID].get_pixel_at(locI,locJ) );
 		}
 	}
 

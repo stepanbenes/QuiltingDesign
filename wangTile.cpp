@@ -43,6 +43,11 @@ pixelArray wangTile::get_tile_image() const
 	return imageData;
 }
 
+pixel wangTile::get_pixel_at(int iCoord, int jCoord)
+{
+	return imageData.get_pixel_at(iCoord,jCoord);
+}
+
 void wangTile::construct_tile_image(std::vector<sample> & allSamples, int nO, int nT)
 {
 	//

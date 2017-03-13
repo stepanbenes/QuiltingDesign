@@ -26,8 +26,8 @@
 
 int main(int argc, char * argv[]) throw(...)
 {
-	std::string inputJSONfile     = "test-iofiles/muLib_ImageInput.json";
-	std::string inputSpecimenFile = "test-iofiles/_specimen.bmp";
+	std::string inputJSONfile     = "test-iofiles/muLib_ImageInput_v2.json";
+	std::string inputSpecimenFile = "test-iofiles/_specimen_v2.bmp";
 	std::string outputFolder      = "test-iofiles/";
 	std::string outputTilingImage = "test-iofiles/_tiling.bmp";
 	const std::string sampleStencil = "sample";
@@ -62,9 +62,11 @@ int main(int argc, char * argv[]) throw(...)
 
 	// Load setting from JSON file
 	load_JSON_setting(inputJSONfile, tileSet, myParams, allSamples);
+	std::cout << __TIME__ << ": Input JSON file loaded" << std::endl;
 
 	// Load specimen data
 	specimen.load_BMP(inputSpecimenFile);
+	std::cout << __TIME__ << ": Specimen BMP file loaded" << std::endl;
 
 	// Extract samples
 	for (std::vector<sample>::iterator i = allSamples.begin(); i != allSamples.end(); ++i) {
@@ -86,14 +88,18 @@ int main(int argc, char * argv[]) throw(...)
 		i->save_BMP(fileName);
 #endif
 	}
+	std::cout << __TIME__ << ": Samples extracted" << std::endl;
 
 	// Construct tiles
 	tileSet.construct_tiles(allSamples, myParams.nO, myParams.nT);
 	tileSet.save_tiles_BMP(outputFolder, tileStencil, tileSuffix);
+	std::cout << __TIME__ << ": Tiles created" << std::endl;
 
 	// Test tiling
 	wangTiling tiling = tileSet.give_stochastic_tiling(4, 3);
+	std::cout << __TIME__ << ": Stochastic tiling generated" << std::endl;
 	tileSet.construct_tiling_image(&tiling);
+	std::cout << __TIME__ << ": Tiling image generated" << std::endl;
 	tiling.save_tiling_BMP(outputTilingImage);
 
 #if DEBUG == 1

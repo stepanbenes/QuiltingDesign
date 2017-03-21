@@ -212,17 +212,21 @@ void pixelArray::load_BMP(std::string inFile)
 	}
 
 	BMP bmp;
-	bmp.ReadFromFile(inFile.c_str());
+	bool success = bmp.ReadFromFile(inFile.c_str());
+	if (!success) {
+		throw std::exception("BMP file was not loaded.");
+	}
 
-	resolution[0] = bmp.TellWidth();
-	resolution[1] = bmp.TellHeight();
+	resolution[0] = bmp.TellHeight();
+	resolution[1] = bmp.TellWidth();
 	data.reserve(resolution[0]*resolution[1]);
 	nPixelValues = 3;
-	for (int j = 0; j < resolution[1]; j++)
+	for (int i = 0; i < resolution[0]; i++)
 	{
-		for (int i = 0; i < resolution[0]; i++)
+		for (int j = 0; j < resolution[1]; j++)
 		{
-			RGBApixel rgbaPixel = bmp.GetPixel(i, j);
+			// Note swapped indices in EasyBMP and our script
+			RGBApixel rgbaPixel = bmp.GetPixel(j, i);
 			data.push_back(pixel((int)rgbaPixel.Red, (int)rgbaPixel.Green, (int)rgbaPixel.Blue));
 		}
 	}

@@ -26,8 +26,8 @@
 
 int main(int argc, char * argv[]) throw(...)
 {
-	std::string inputJSONfile     = "test-iofiles/muLib_ImageInput_v2.json";
-	std::string inputSpecimenFile = "test-iofiles/_specimen_v2.bmp";
+	std::string inputJSONfile     = "test-iofiles/muLib_ImageInput_t3.json";
+	std::string inputSpecimenFile = "test-iofiles/_specimen_t3.bmp";
 	std::string outputFolder      = "test-iofiles/";
 	std::string outputTilingImage = "test-iofiles/_tiling.bmp";
 	const std::string sampleStencil = "sample";
@@ -50,7 +50,7 @@ int main(int argc, char * argv[]) throw(...)
 		// With DEBUG macro, use predefined input/output folders/files
 		std::cout << "In DEBUG mode, script uses default I/O files..." << std::endl;
 #else
-		return 1;
+		exit(1);
 #endif
 	}
 	else {
@@ -61,12 +61,32 @@ int main(int argc, char * argv[]) throw(...)
 
 
 	// Load setting from JSON file
-	load_JSON_setting(inputJSONfile, tileSet, myParams, allSamples);
-	std::cout << __TIME__ << ": Input JSON file loaded" << std::endl;
+	try {
+		load_JSON_setting(inputJSONfile, tileSet, myParams, allSamples);
+	}
+	catch (const std::exception & e) {
+		std::cerr << e.what() << std::endl;
+#if DEBUG == 1
+		std::cin.get();
+#endif
+		exit(1);
+	}
+	std::cout << "Input JSON file loaded" << std::endl;
+
 
 	// Load specimen data
-	specimen.load_BMP(inputSpecimenFile);
-	std::cout << __TIME__ << ": Specimen BMP file loaded" << std::endl;
+	try {
+		specimen.load_BMP(inputSpecimenFile);
+	}
+	catch (const std::exception & e) {
+		std::cerr << e.what() << std::endl;
+#if DEBUG == 1
+		std::cin.get();
+#endif
+		exit(1);
+	}
+	std::cout << "Specimen BMP file loaded" << std::endl;
+
 
 	// Extract samples
 	for (std::vector<sample>::iterator i = allSamples.begin(); i != allSamples.end(); ++i) {
@@ -74,9 +94,11 @@ int main(int argc, char * argv[]) throw(...)
 			i->acquire_data_from_specimen(specimen);
 		}
 		catch(const std::exception & e){
-			std::cout << e.what() << std::endl;
-			std::cin.get();
-			return 1;
+			std::cerr << e.what() << std::endl; 
+#if DEBUG == 1
+				std::cin.get();
+#endif
+				exit(1);
 		}
 #if DEBUG == 1
 		std::string fileName = "";
@@ -88,19 +110,22 @@ int main(int argc, char * argv[]) throw(...)
 		i->save_BMP(fileName);
 #endif
 	}
-	std::cout << __TIME__ << ": Samples extracted" << std::endl;
+	std::cout << "Samples extracted" << std::endl;
+
 
 	// Construct tiles
 	tileSet.construct_tiles(allSamples, myParams.nO, myParams.nT);
 	tileSet.save_tiles_BMP(outputFolder, tileStencil, tileSuffix);
-	std::cout << __TIME__ << ": Tiles created" << std::endl;
+	std::cout << "Tiles created" << std::endl;
+
 
 	// Test tiling
 	wangTiling tiling = tileSet.give_stochastic_tiling(4, 3);
-	std::cout << __TIME__ << ": Stochastic tiling generated" << std::endl;
+	std::cout << "Stochastic tiling generated" << std::endl;
 	tileSet.construct_tiling_image(&tiling);
-	std::cout << __TIME__ << ": Tiling image generated" << std::endl;
+	std::cout << "Tiling image generated" << std::endl;
 	tiling.save_tiling_BMP(outputTilingImage);
+
 
 #if DEBUG == 1
 	std::cout << "Press any key to abort the program...";

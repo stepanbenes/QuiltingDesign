@@ -15,21 +15,24 @@ void load_JSON_setting(std::string inFile, wangSet & tileSet, parameters & inPar
 
 	// Load input string
 	std::ifstream JSONfile(inFile);
+	if (JSONfile.fail()) {
+		throw std::exception("Input JSON file does not exist.");
+	}
 	std::string JSONstring((std::istreambuf_iterator<char>(JSONfile)), std::istreambuf_iterator<char>());
 
 	// Parse buffer string
 	picojson::value JSONvalue;
 	std::string JSONerr = picojson::parse(JSONvalue, JSONstring);
 	if (!JSONerr.empty()) {
-		//throw std::exception("Loaded JSON string couldn't be parsed.");
+		throw std::exception("Loaded JOSN string couldn't be parsed.");
 	}
 
 	// Test parsed JSON values	
 	if (!JSONvalue.is<picojson::object>()) {
-		//throw std::exception("JSON is not an object.");
+		throw std::exception("JSON is not an object.");
 	}
 	if ( !(JSONvalue.contains("tileSize") && JSONvalue.contains("sampleOverlap") && JSONvalue.contains("samples") && JSONvalue.contains("tiles")) ) {
-		//throw std::exception("Loaded JSON doesn't contain all requried fields.");
+		throw std::exception("Loaded JSON doesn't contain all requried fields.");
 	}
 
 	// Load all data

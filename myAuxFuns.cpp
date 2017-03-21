@@ -7,8 +7,6 @@
 #include "picojson.h"
 #include "myAuxFuns.h"
 
-#define LOC_DEBUG 0
-
 void load_JSON_setting(std::string inFile, wangSet & tileSet, parameters & inParameters, std::vector<sample> & inSamples)
 {
 	// Load script setting provided in JSON file
@@ -60,33 +58,29 @@ void load_JSON_setting(std::string inFile, wangSet & tileSet, parameters & inPar
 	}
 
 
-	// Print all data (only in LOC_DEBUG mode)
-#if LOC_DEBUG == 1
+	//// Print all data
+	//std::cout << "Identified JSON values:" << std::endl;
+	//std::cout << "    tileSize:      " << (int)JSONvalue.get("tileSize").get<double>() << std::endl;
+	//std::cout << "    sampleOverlap: " << (int)JSONvalue.get("sampleOverlap").get<double>() << std::endl;
 
-	std::cout << "Identified JSON values:" << std::endl;
-	std::cout << "    tileSize:      " << (int)JSONvalue.get("tileSize").get<double>() << std::endl;
-	std::cout << "    sampleOverlap: " << (int)JSONvalue.get("sampleOverlap").get<double>() << std::endl;
+	////picojson::array tilesArray = JSONvalue.get("tiles").get<picojson::array>();
+	//std::cout << "    # tiles:       " << tilesArray.size() << std::endl;
+	//for (picojson::array::const_iterator it = tilesArray.begin(); it != tilesArray.end(); it++) {
+	//	std::cout << "        Tile " << it->get("id").get<double>() << ": [ "
+	//		<< it->get("codes").get<picojson::array>()[0] << ", "
+	//		<< it->get("codes").get<picojson::array>()[1] << ", "
+	//		<< it->get("codes").get<picojson::array>()[2] << ", "
+	//		<< it->get("codes").get<picojson::array>()[3] << " ]"
+	//		<< std::endl;
+	//}
 
-	//picojson::array tilesArray = JSONvalue.get("tiles").get<picojson::array>();
-	std::cout << "    # tiles:       " << tilesArray.size() << std::endl;
-	for (picojson::array::const_iterator it = tilesArray.begin(); it != tilesArray.end(); it++) {
-		std::cout << "        Tile " << it->get("id").get<double>() << ": [ "
-			<< it->get("codes").get<picojson::array>()[0] << ", "
-			<< it->get("codes").get<picojson::array>()[1] << ", "
-			<< it->get("codes").get<picojson::array>()[2] << ", "
-			<< it->get("codes").get<picojson::array>()[3] << " ]"
-			<< std::endl;
-	}
-
-	//picojson::array sampleArray = JSONvalue.get("samples").get<picojson::array>();
-	std::cout << "    # samples:       " << sampleArray.size() << std::endl;
-	for (picojson::array::const_iterator it = sampleArray.begin(); it != sampleArray.end(); it++) {
-		std::cout << "        Sample " << it - sampleArray.begin() << ": [ "
-			<< it->get("originX").get<double>() << ", "
-			<< it->get("originY").get<double>() << " ]"
-			<< std::endl;
-	}
-
-#endif
+	////picojson::array sampleArray = JSONvalue.get("samples").get<picojson::array>();
+	//std::cout << "    # samples:       " << sampleArray.size() << std::endl;
+	//for (picojson::array::const_iterator it = sampleArray.begin(); it != sampleArray.end(); it++) {
+	//	std::cout << "        Sample " << it - sampleArray.begin() << ": [ "
+	//		<< it->get("originX").get<double>() << ", "
+	//		<< it->get("originY").get<double>() << " ]"
+	//		<< std::endl;
+	//}
 
 };

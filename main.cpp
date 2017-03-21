@@ -15,8 +15,6 @@
 #include "wangTiling.h"
 #include "sample.h"
 
-#define DEBUG 1		// Define DEBUG macro such that certain parts are neglected or printed (set 0 for release)
-
 // TODO Unresolved issues:
 // NOTE No error control has been implemented (e.g., during opening files)
 // NOTE Discuss validity of the wedge mask
@@ -26,8 +24,8 @@
 
 int main(int argc, char * argv[]) throw(...)
 {
-	std::string inputJSONfile     = "test-iofiles/muLib_ImageInput_t3.json";
-	std::string inputSpecimenFile = "test-iofiles/_specimen_t3.bmp";
+	std::string inputJSONfile     = "test-iofiles/muLib_ImageInput.json";
+	std::string inputSpecimenFile = "test-iofiles/_specimen.bmp";
 	std::string outputFolder      = "test-iofiles/";
 	std::string outputTilingImage = "test-iofiles/_tiling.bmp";
 	const std::string sampleStencil = "sample";
@@ -46,7 +44,7 @@ int main(int argc, char * argv[]) throw(...)
 		std::cout << "			[1] absolute path to the JSON input file;" << std::endl;
 		std::cout << "			[2] absolute path to an input BMP image;" << std::endl;
 		std::cout << "			[3] an absolute path to the output folder." << std::endl;
-#if DEBUG == 1
+#ifdef _DEBUG
 		// With DEBUG macro, use predefined input/output folders/files
 		std::cout << "In DEBUG mode, script uses default I/O files..." << std::endl;
 #else
@@ -66,7 +64,7 @@ int main(int argc, char * argv[]) throw(...)
 	}
 	catch (const std::exception & e) {
 		std::cerr << e.what() << std::endl;
-#if DEBUG == 1
+#ifdef _DEBUG
 		std::cin.get();
 #endif
 		exit(1);
@@ -80,7 +78,7 @@ int main(int argc, char * argv[]) throw(...)
 	}
 	catch (const std::exception & e) {
 		std::cerr << e.what() << std::endl;
-#if DEBUG == 1
+#ifdef _DEBUG
 		std::cin.get();
 #endif
 		exit(1);
@@ -95,12 +93,12 @@ int main(int argc, char * argv[]) throw(...)
 		}
 		catch(const std::exception & e){
 			std::cerr << e.what() << std::endl; 
-#if DEBUG == 1
+#ifdef _DEBUG
 				std::cin.get();
 #endif
 				exit(1);
 		}
-#if DEBUG == 1
+#ifdef _DEBUG
 		std::string fileName = "";
 		fileName += outputFolder;
 		fileName += sampleStencil;
@@ -127,7 +125,7 @@ int main(int argc, char * argv[]) throw(...)
 	tiling.save_tiling_BMP(outputTilingImage);
 
 
-#if DEBUG == 1
+#ifdef _DEBUG
 	std::cout << "Press any key to abort the program...";
 	std::cin.get();
 #endif

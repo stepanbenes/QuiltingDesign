@@ -74,6 +74,11 @@ void wangTile::save_tile_BMP(std::string outFile)
 	this->imageData.save_BMP(outFile);
 }
 
+void wangTile::load_tile_BMP(std::string inFile)
+{
+	imageData.load_BMP(inFile);
+}
+
 wangTile::~wangTile()
 {
 }

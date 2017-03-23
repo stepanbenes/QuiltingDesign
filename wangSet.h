@@ -17,6 +17,7 @@ public:
 	wangTile get_tile_at(int tID);
 	void construct_tiles(std::vector<sample> & allSamples, int nO, int nT);
 	void save_tiles_BMP(std::string outputFolder, std::string tileStencil, std::string tileSuffix);
+	void load_tiles_BMP(std::string folder, std::string tileStencil, std::string tileSuffix);
 	wangTiling give_stochastic_tiling(int nTx, int nTy);
 	void construct_tiling_image(wangTiling * inTiling);
 	friend std::ostream& operator<<(std::ostream & out, const wangSet & s);

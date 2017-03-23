@@ -42,6 +42,9 @@
     <ClCompile Include="wangTiling.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="main_TA.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="myAuxFuns.h">

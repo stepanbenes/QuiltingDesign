@@ -55,6 +55,19 @@ void wangSet::save_tiles_BMP(std::string outputFolder, std::string tileStencil, 
 	}
 }
 
+void wangSet::load_tiles_BMP(std::string folder, std::string tileStencil, std::string tileSuffix)
+{
+
+	for (std::vector<wangTile>::iterator it = tiles.begin(); it != tiles.end(); ++it) {
+		std::string fileName = folder;
+		fileName += tileStencil;
+		fileName += std::to_string(it - tiles.begin());
+		fileName += tileSuffix;
+		it->load_tile_BMP(fileName);
+	}
+
+}
+
 wangTiling wangSet::give_stochastic_tiling(int nTx, int nTy)
 {
 	std::random_device rd;							//Will be used to obtain a seed for the random number engine

@@ -113,7 +113,6 @@
   <ItemGroup>
     <ClCompile Include="EasyBMP.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="main_TA.cpp" />
     <ClCompile Include="myAuxFuns.cpp" />
     <ClCompile Include="pixelArray.cpp" />
     <ClCompile Include="sample.cpp" />

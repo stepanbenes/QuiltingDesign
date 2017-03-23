@@ -79,6 +79,16 @@ void wangTile::load_tile_BMP(std::string inFile)
 	imageData.load_BMP(inFile);
 }
 
+void wangTile::compute_averaged_tile_lightness()
+{
+	averagedLightness = imageData.compute_averaged_lightness();
+}
+
+double wangTile::get_averaged_lightness()
+{
+	return averagedLightness;
+}
+
 wangTile::~wangTile()
 {
 }

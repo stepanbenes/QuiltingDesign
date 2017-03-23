@@ -151,16 +151,20 @@ int main(int argc, char * argv[]) throw(...)
 int main(int argc, char * argv[]) throw(...)
 {
 	std::string inputJSONfile = "test-iofiles/muLib_ImageInput_fromJP.json";
-	std::string inputFolder = "test-iofiles/fromJP/";
+	std::string inputFolder = "test-iofiles/fromJP/modified/";
 	std::string outputTilingImage = "test-iofiles/_tiling.bmp";
-	std::string inputReferenceImage = "test-iofiles/_tiling.bmp";
-	int nTx = 4;
-	int nTy = 3;
+	std::string inputReferenceImage = "test-iofiles/fromJP/reference.bmp";
+	int nTx = 40;
+	int nTy = 19;
 	const std::string tileStencil = "tile";
 	const std::string tileSuffix = ".bmp";
 	wangSet tileSet;
 	parameters myParams;					// Structure encapsulating settings (defined in myAuxFuns.h)
 	std::vector<sample> allSamples;			// Obsolete, only to re-use load_JSON_setting function
+	bool useRefImg = true;					// Boolean switch for reference image governed tiling
+	pixelArray refImg;
+	std::vector<double> lightnessMap;
+	wangTiling tiling;
 
 
 	// Check input parameters
@@ -188,6 +192,13 @@ int main(int argc, char * argv[]) throw(...)
 		std::istringstream snTy(argv[5]);
 		snTx >> nTx;
 		snTy >> nTy;
+		if (argc == 7) {
+			useRefImg = true;
+			inputReferenceImage = (std::string)argv[6];
+		}
+		else {
+			useRefImg = false;
+		}
 	}
 
 
@@ -205,6 +216,24 @@ int main(int argc, char * argv[]) throw(...)
 	std::cout << "Input JSON file loaded" << std::endl;
 
 
+	// Load reference image and define average lightness map
+	if (useRefImg) {
+		try {
+			refImg.load_BMP(inputReferenceImage);
+		}
+		catch (const std::exception & e) {
+			std::cerr << e.what() << std::endl;
+#ifdef _DEBUG
+			std::cin.get();
+#endif
+			exit(1);
+		}
+
+		// Partition reference image and compute local lightness
+		lightnessMap = refImg.compute_lightness_map(nTx, nTy);
+	}
+
+
 	// Load tiles
 	try {
 		tileSet.load_tiles_BMP(inputFolder, tileStencil, tileSuffix);
@@ -217,10 +246,18 @@ int main(int argc, char * argv[]) throw(...)
 		exit(1);
 	}
 	std::cout << "Tile images loaded" << std::endl;
+	if (useRefImg) {
+		tileSet.compute_averaged_tile_lightness();
+	}
 
 
 	// Test tiling
-	wangTiling tiling = tileSet.give_stochastic_tiling(nTx, nTy);
+	if (useRefImg) {
+		tiling = tileSet.give_stochastic_tiling(nTx, nTy);
+	}
+	else {
+		tiling = tileSet.give_stochastic_tiling(nTx, nTy, lightnessMap);
+	}
 	std::cout << "Stochastic tiling [ " << nTx << ", " << nTy << "] generated" << std::endl;
 	tileSet.construct_tiling_image(&tiling);
 	std::cout << "Tiling image generated" << std::endl;

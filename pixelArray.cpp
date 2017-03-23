@@ -1,5 +1,6 @@
 #include <fstream>
 #include <cstdint> 
+#include <cmath>
 #include <exception>
 #include "pixelArray.h"
 #include "EasyBMP.h"
@@ -33,7 +34,7 @@ pixelArray::~pixelArray()
 {
 }
 
-int pixelArray::convert_IJ_indices(int iCoord, int jCoord)
+int pixelArray::convert_IJ_indices(int iCoord, int jCoord) const
 {
 	return (iCoord*resolution[1] + jCoord);
 }
@@ -270,6 +271,59 @@ void pixelArray::save_BMP(std::string outFile)
 
 	output.WriteToFile(outFile.c_str());
 }
+
+double pixelArray::compute_averaged_lightness() const
+{
+	double sumLightness = 0.0;
+	for (std::vector<pixel>::const_iterator iD = data.begin(); iD != data.end(); ++iD) {
+		sumLightness += iD->get_lightness_val();
+	}
+	return sumLightness / data.size();
+}
+
+
+double pixelArray::compute_averaged_lightness_of_patch(int minI, int maxI, int minJ, int maxJ) const
+{
+	if (minI<0 || maxI>=resolution[0] || minI>maxI || minJ>maxJ || minJ<0 || maxJ>=resolution[1]) {
+		throw std::exception("Patch for lightness computation is out of range.");
+	}
+
+	double sumLightness = 0.0;
+	for (int i = minI; i <= maxI; i++) {
+		for (int j = minJ; j <= maxJ; j++) {
+			sumLightness += data.at(convert_IJ_indices(i, j)).get_lightness_val();
+		}
+	}
+
+	return sumLightness/( (maxI-minI+1)*(maxJ-minJ+1) );
+}
+
+std::vector<double> pixelArray::compute_lightness_map(int nTx, int nTy) const
+{
+	// Parition the pixel array into a tiling of nTx * nTy tiles and compute average lightness for each domain
+	// Note different coordinate system for tiling and pixel array and possibility for non-integral decomposition (slightly large patch is assumed)
+	std::vector<double> tilingLightness(nTx*nTy);
+	int minI = 0;
+	int maxI = 0;
+	int minJ = 0;
+	int maxJ = 0;
+	double resX = resolution[1] / nTx;
+	double resY = resolution[0] / nTy;
+
+
+	for (int iY = 0; iY < nTy; iY++) {
+		for (int iX = 0; iX < nTx; iX++) {
+			minI = (int)std::floor((nTy - iY - 1)*resY);
+			maxI = (int)std::ceil((nTy - iY)*resY-1);
+			minJ = (int)std::floor(iX*resX);
+			maxJ = (int)std::ceil((iX + 1)*resX-1);
+			tilingLightness[iY*nTx + iX] = compute_averaged_lightness_of_patch(minI, maxI, minJ, maxJ);
+		}
+	}
+
+	return tilingLightness;
+}
+
 
 pixelArray pixelArray::extract_patch(double o[2], int s[2], double a, int d)
 {

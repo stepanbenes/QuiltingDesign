@@ -1,5 +1,7 @@
 #include <sstream>
 #include <random>
+#include <limits>
+
 #include "wangSet.h"
 
 wangSet::wangSet()
@@ -68,6 +70,14 @@ void wangSet::load_tiles_BMP(std::string folder, std::string tileStencil, std::s
 
 }
 
+void wangSet::compute_averaged_tile_lightness()
+{
+	for (std::vector<wangTile>::iterator it = tiles.begin(); it != tiles.end(); ++it) {
+		it->compute_averaged_tile_lightness();
+	}
+
+}
+
 wangTiling wangSet::give_stochastic_tiling(int nTx, int nTy)
 {
 	std::random_device rd;							//Will be used to obtain a seed for the random number engine
@@ -106,6 +116,60 @@ wangTiling wangSet::give_stochastic_tiling(int nTx, int nTy)
 
 	return wangTiling(nTx, nTy, tiling);
 }
+
+
+wangTiling wangSet::give_stochastic_tiling(int nTx, int nTy, std::vector<double> lightnessMap)
+{
+	// Overload method constructing stochastic tiling with respect to given lightness map
+
+	std::random_device rd;							//Will be used to obtain a seed for the random number engine
+	std::mt19937 gen(rd());							//Standard mersenne_twister_engine seeded with rd()
+	std::vector<int> tiling(nTx*nTy);
+	std::vector<int> candidates(tiles.size());
+	int nCand = 0;
+	bool addTile = false;
+	double minVal = std::numeric_limits<double>::max();
+	double actVal = 0.0;
+	int indVal = 0;
+
+	for (int iY = 0; iY < nTy; iY++) {
+		for (int iX = 0; iX < nTx; iX++) {
+
+			nCand = 0;
+
+			// Loop over tiles and identify candidate tiles to place
+			for (std::vector<wangTile>::const_iterator it = tiles.begin(); it != tiles.end(); ++it) {
+				addTile = true;
+				if (iX != 0) {
+					addTile = addTile && (tiles.at(tiling.at(iY*nTx + (iX - 1))).get_code(1) == it->get_code(0));
+				}
+				if (iY != 0) {
+					addTile = addTile && (tiles.at(tiling.at((iY - 1)*nTx + iX)).get_code(3) == it->get_code(2));
+				}
+				if (addTile) {
+					nCand++;
+					candidates[nCand - 1] = (it - tiles.begin());
+				}
+			}
+
+			// Choose candidate tile that matches the reference lightness as much as possible
+			indVal = 0;
+			minVal = std::numeric_limits<double>::max();
+			for (int iC = 0; iC < nCand; iC++) {
+				actVal = abs(lightnessMap.at(iY*nTx + iX) - tiles[candidates[iC]].get_averaged_lightness());
+				if (actVal<minVal) {
+					minVal = actVal;
+					indVal = iC;
+				}
+			}
+			tiling[iY*nTx + iX] = candidates[indVal];
+
+		}
+	}
+
+	return wangTiling(nTx, nTy, tiling);
+}
+
 
 void wangSet::construct_tiling_image(wangTiling * inTiling)
 {

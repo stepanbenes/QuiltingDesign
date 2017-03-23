@@ -72,6 +72,18 @@ uint8_t pixel::get_val(int ind) const
 	};
 }
 
+double pixel::get_lightness_val() const
+{
+	// Returns lightness value L from HSL color space defined in range [0.0,1.0] 
+	double Rr = ((double)val[0]) / 255.0;
+	double Gr = ((double)val[1]) / 255.0;
+	double Br = ((double)val[2]) / 255.0;
+	double minVal = std::min(std::min(Rr, Gr), Br);
+	double maxVal = std::max(std::max(Rr, Gr), Br);
+
+	return 1.0/2.0*(minVal + maxVal);
+}
+
 pixel pixel::operator+(const pixel& addend)
 {
 	return pixel(this->get_val(0) + addend.get_val(0), this->get_val(1) + addend.get_val(1), this->get_val(2) + addend.get_val(2));

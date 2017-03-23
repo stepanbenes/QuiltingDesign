@@ -9,6 +9,7 @@ protected:
 	int codes[4] = { 0,0,0,0 };
 	int id = 0;
 	pixelArray imageData;
+	double averagedLightness = 0.0;
 public:
 	wangTile();
 	wangTile(int inId, int inCodes[4]);
@@ -20,6 +21,8 @@ public:
 	void construct_tile_image(std::vector<sample> & allSamples, int nO, int nT);
 	void save_tile_BMP(std::string outFile);
 	void load_tile_BMP(std::string inFile);
+	void compute_averaged_tile_lightness();
+	double get_averaged_lightness();
 	friend std::ostream& operator<<(std::ostream & out, const wangTile & t);
 	~wangTile();
 };

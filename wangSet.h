@@ -18,7 +18,9 @@ public:
 	void construct_tiles(std::vector<sample> & allSamples, int nO, int nT);
 	void save_tiles_BMP(std::string outputFolder, std::string tileStencil, std::string tileSuffix);
 	void load_tiles_BMP(std::string folder, std::string tileStencil, std::string tileSuffix);
+	void compute_averaged_tile_lightness();
 	wangTiling give_stochastic_tiling(int nTx, int nTy);
+	wangTiling give_stochastic_tiling(int nTx, int nTy, std::vector<double> lightnessMap);
 	void construct_tiling_image(wangTiling * inTiling);
 	friend std::ostream& operator<<(std::ostream & out, const wangSet & s);
 };

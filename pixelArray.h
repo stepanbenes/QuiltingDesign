@@ -15,7 +15,7 @@ public:
 	pixelArray(int iResolution, int jResolution);
 	pixelArray(std::string inFile);
 	~pixelArray();
-	int convert_IJ_indices(int iCoord, int jCoord);
+	int convert_IJ_indices(int iCoord, int jCoord) const;
 	void get_resolution(int & resX, int & resY);
 	int get_value_at(int iCoord, int jCoord, int iV);
 	void set_values_at(int v1, int v2, int v3, int iCoord, int jCoord);
@@ -28,6 +28,9 @@ public:
 	void save_binary_image(std::string outFile);
 	void load_BMP(std::string inFile);
 	void save_BMP(std::string outFile);
+	double compute_averaged_lightness() const;
+	double compute_averaged_lightness_of_patch(int minI, int minJ, int maxI, int maxJ) const;
+	std::vector<double> compute_lightness_map(int nTx, int nTy) const;
 	pixelArray extract_patch(double o[2], int s[2], double a, int d);
 	pixelArray rotate_n90(int n);
 	std::vector<pixel> get_data_vector();

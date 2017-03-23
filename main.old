@@ -39,7 +39,7 @@ int main(int argc, char * argv[]) throw(...)
 
 
 	// Check input parameters
-	if (argc != 3) {
+	if (argc != 4) {
 		std::cout << "The script requires three inputs: " << std::endl;
 		std::cout << "			[1] absolute path to the JSON input file;" << std::endl;
 		std::cout << "			[2] absolute path to an input BMP image;" << std::endl;

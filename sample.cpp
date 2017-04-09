@@ -6,10 +6,10 @@ sample::sample()
 {
 }
 
-sample::sample(int originX, int originY, int edgeLength)
+sample::sample(int originI, int originJ, int edgeLength)
 {
-	origin[0] = originX;
-	origin[1] = originY;
+	origin[0] = originI;
+	origin[1] = originJ;
 	resolution[0] = edgeLength;
 	resolution[1] = edgeLength;
 	nPixelValues = 3;
@@ -38,7 +38,8 @@ void sample::acquire_data_from_specimen(pixelArray & specimen)
 	double doubleOrigin[2];
 	doubleOrigin[0] = (double)origin[0];
 	doubleOrigin[1] = (double)origin[1];
-	data = (specimen.extract_patch(doubleOrigin, resolution, sqrt(2.0) / 2.0, 1)).get_data_vector();
+	//data = (specimen.extract_patch(doubleOrigin, resolution, sqrt(2.0) / 2.0, 1)).get_data_vector();
+	data = *((specimen.extract_patch(doubleOrigin, resolution, sqrt(2.0) / 2.0, 1)).getptr_data_vector());
 }
 
 sample sample::merge_sample(sample * that, int nO, int nM)
@@ -152,16 +153,16 @@ sample sample::merge_sample(sample * that, int nO, int nM)
 
 		// Fill the first part from the first input
 		for (int j = 0; j < (this->resolution[1] - nO); j++) {
-			newSample.set_pixel_at(this->get_pixel_at(i, j), i, j);
+			newSample.set_pixel_at(this->getptr_pixel_at(i, j), i, j);
 		}
 
 		// Fill the overlap
 		for (int j = 0; j < nO; j++) {
 			if (j < optPath[i]) {
-				newSample.set_pixel_at(this->get_pixel_at(i, offset+j), i, offset + j);
+				newSample.set_pixel_at(this->getptr_pixel_at(i, offset+j), i, offset + j);
 			}
 			else if (j > optPath[i]) {
-				newSample.set_pixel_at(that->get_pixel_at(i, j), i, offset + j);
+				newSample.set_pixel_at(that->getptr_pixel_at(i, j), i, offset + j);
 			}
 			else { // TODO Decide what to do with the seam pixels (averaged for now)
 				//newSample.set_pixel_at( pixel(255,0	,0), i, offset+  j);
@@ -171,7 +172,7 @@ sample sample::merge_sample(sample * that, int nO, int nM)
 
 		// Fill the remaining part from the second input
 		for (int j = 0; j < (that->resolution[1] - nO); j++) {
-			newSample.set_pixel_at(that->get_pixel_at(i, nO + j), i, this->resolution[1] + j);
+			newSample.set_pixel_at(that->getptr_pixel_at(i, nO + j), i, this->resolution[1] + j);
 		}
 
 	}
@@ -214,7 +215,7 @@ sample sample::rotate_n90(int n)
 		for (int j = 0; j < resolution[1]; j++) {
 			newI = transVec[0] + rotMtrx[0] * i + rotMtrx[1] * j;
 			newJ = transVec[1] + rotMtrx[2] * i + rotMtrx[3] * j;
-			rotArray.set_pixel_at(this->get_pixel_at(i, j), newI, newJ);
+			rotArray.set_pixel_at(this->getptr_pixel_at(i, j), newI, newJ);
 		}
 	}
 

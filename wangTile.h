@@ -17,7 +17,9 @@ public:
 	int get_ID() const;
 	int get_code(int iC) const;
 	pixelArray get_tile_image() const;
+	pixelArray * getptr_tile_image();
 	pixel get_pixel_at(int iCoord, int jCoord);
+	pixel * getptr_pixel_at(int iCoord, int jCoord);
 	void construct_tile_image(std::vector<sample> & allSamples, int nO, int nT);
 	void save_tile_BMP(std::string outFile);
 	void load_tile_BMP(std::string inFile);

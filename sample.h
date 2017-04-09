@@ -8,7 +8,7 @@ private:
 	int origin[2] = { 0,0 };
 public:
 	sample();
-	sample(int originX, int originY, int resolution);
+	sample(int originI, int originJ, int resolution);
 	sample(int inRes[2]);
 	~sample();
 	void acquire_data_from_specimen(pixelArray & specimen);

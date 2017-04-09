@@ -43,9 +43,19 @@ pixelArray wangTile::get_tile_image() const
 	return imageData;
 }
 
+pixelArray * wangTile::getptr_tile_image()
+{
+	return &imageData;
+}
+
 pixel wangTile::get_pixel_at(int iCoord, int jCoord)
 {
 	return imageData.get_pixel_at(iCoord,jCoord);
+}
+
+pixel * wangTile::getptr_pixel_at(int iCoord, int jCoord)
+{
+	return imageData.getptr_pixel_at(iCoord, jCoord);
 }
 
 void wangTile::construct_tile_image(std::vector<sample> & allSamples, int nO, int nT)
@@ -55,9 +65,9 @@ void wangTile::construct_tile_image(std::vector<sample> & allSamples, int nO, in
 	double tileScale = 2.0/sqrt(2.0);
 	double tileOrigin[2] = { (nO - 1.0) / 2.0, ((2.0*nT+nO)-1.0)/2.0 };
 
-	sample merged03 = allSamples[codes[0]].merge_sample(&allSamples[codes[3]], nO, 1);
-	sample sample2rot = allSamples[codes[2]].rotate_n90(2);
-	sample sample1rot = allSamples[codes[1]].rotate_n90(2);
+	sample merged03 = allSamples.at(codes[0]).merge_sample(&allSamples.at(codes[3]), nO, 1);
+	sample sample2rot = allSamples.at(codes[2]).rotate_n90(2);
+	sample sample1rot = allSamples.at(codes[1]).rotate_n90(2);
 	sample merged21rot = sample1rot.merge_sample(&sample2rot, nO, 1);
 	sample merged21 = merged21rot.rotate_n90(2);
 

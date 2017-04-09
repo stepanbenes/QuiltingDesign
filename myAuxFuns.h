@@ -2,6 +2,7 @@
 #include <string>
 #include "wangSet.h"
 #include "sample.h"
+#include "pixelArray.h"
 
 struct parameters {
 	int nT = 0;					// Define length of tile width
@@ -11,3 +12,4 @@ struct parameters {
 };
 
 void load_JSON_setting(std::string inFile, wangSet & tileSet, parameters & inParameters, std::vector<sample> & inSamples);
+pixelArray convert_lightnessMap_to_pixelArray(std::vector<double> & lightnessMap, int nTx, int nTy);

@@ -47,20 +47,25 @@ void pixelArray::get_resolution(int & resX, int & resY)
 
 int pixelArray::get_value_at(int iCoord, int jCoord, int iV)
 {
-	//return (int)(data.at(convert_IJ_indices(iCoord, jCoord))).get_val(iV);
-	return (int)(data[iCoord*resolution[1] + jCoord]).get_val(iV);
+	return (int)(data.at(convert_IJ_indices(iCoord, jCoord))).get_val(iV);
+	//return (int)(data[iCoord*resolution[1] + jCoord]).get_val(iV);
 }
 
 void pixelArray::set_values_at(int v1, int v2, int v3, int iCoord, int jCoord)
 {
-	//data.at(convert_IJ_indices(iCoord, jCoord)).set_val(v1, v2, v3);
-	data[iCoord*resolution[1] + jCoord].set_val(v1, v2, v3);
+	data.at(convert_IJ_indices(iCoord, jCoord)).set_val(v1, v2, v3);
+	//data[iCoord*resolution[1] + jCoord].set_val(v1, v2, v3);
 }
 
 pixel pixelArray::get_pixel_at(int iCoord, int jCoord)
 {
-	//return data.at(convert_IJ_indices(iCoord, jCoord));	
-	return data[iCoord*resolution[1] + jCoord];
+	return data.at(convert_IJ_indices(iCoord, jCoord));	
+	//return data[iCoord*resolution[1] + jCoord];
+}
+
+pixel * pixelArray::getptr_pixel_at(int iCoord, int jCoord)
+{
+	return & data.at(convert_IJ_indices(iCoord, jCoord));
 }
 
 void pixelArray::add_pixel(pixel & inPixel)
@@ -68,9 +73,25 @@ void pixelArray::add_pixel(pixel & inPixel)
 	data.push_back(inPixel);
 }
 
+void pixelArray::add_pixel(pixel * inPixelPtr)
+{
+	data.push_back(*inPixelPtr);
+}
+
+void pixelArray::add_pixel(int v1, int v2, int v3)
+{
+	data.push_back( pixel(v1,v2,v3) );
+}
+
 void pixelArray::set_pixel_at(pixel & inPixel, int iCoord, int jCoord)
 {
 	data.at(convert_IJ_indices(iCoord, jCoord)) = inPixel;
+}
+
+
+void pixelArray::set_pixel_at(pixel * inPixel, int iCoord, int jCoord)
+{
+	data.at(convert_IJ_indices(iCoord, jCoord)) = *inPixel;
 }
 
 void pixelArray::load_textified_image(std::string inFile)
@@ -427,7 +448,7 @@ pixelArray pixelArray::rotate_n90(int n)
 		for (int j = 0; j < resolution[1]; j++) {
 			newI = transVec[0] + rotMtrx[0] * i + rotMtrx[1] * j;
 			newJ = transVec[1] + rotMtrx[2] * i + rotMtrx[3] * j;
-			rotArray.set_pixel_at(this->get_pixel_at(i, j), newI, newJ);
+			rotArray.set_pixel_at(this->getptr_pixel_at(i, j), newI, newJ);
 		}
 	}
 
@@ -437,4 +458,9 @@ pixelArray pixelArray::rotate_n90(int n)
 std::vector<pixel> pixelArray::get_data_vector()
 {
 	return data;
+}
+
+std::vector<pixel>* pixelArray::getptr_data_vector()
+{
+	return &data;
 }

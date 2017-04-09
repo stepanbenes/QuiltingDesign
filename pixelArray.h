@@ -20,8 +20,12 @@ public:
 	int get_value_at(int iCoord, int jCoord, int iV);
 	void set_values_at(int v1, int v2, int v3, int iCoord, int jCoord);
 	pixel get_pixel_at(int iCoord, int jCoord);
+	pixel * getptr_pixel_at(int iCoord, int jCoord);
 	void add_pixel(pixel & inPixel);
+	void add_pixel(pixel * inPixelPtr);
+	void add_pixel(int v1, int v2, int V3);
 	void set_pixel_at(pixel & inPixel, int iCoord, int jCoord);
+	void set_pixel_at(pixel * inPixel, int iCoord, int jCoord);
 	void load_textified_image(std::string inFile);
 	void save_textified_image(std::string outFile);
 	void load_binary_image(std::string inFile);
@@ -34,5 +38,6 @@ public:
 	pixelArray extract_patch(double o[2], int s[2], double a, int d);
 	pixelArray rotate_n90(int n);
 	std::vector<pixel> get_data_vector();
+	std::vector<pixel> * getptr_data_vector();
 };
 

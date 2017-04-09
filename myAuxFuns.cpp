@@ -7,6 +7,8 @@
 #include "picojson.h"
 #include "myAuxFuns.h"
 
+
+
 void load_JSON_setting(std::string inFile, wangSet & tileSet, parameters & inParameters, std::vector<sample> & inSamples)
 {
 	// Load script setting provided in JSON file
@@ -54,7 +56,15 @@ void load_JSON_setting(std::string inFile, wangSet & tileSet, parameters & inPar
 
 	picojson::array sampleArray = JSONvalue.get("samples").get<picojson::array>();
 	for (picojson::array::const_iterator it = sampleArray.begin(); it != sampleArray.end(); it++) {
-		inSamples.push_back( sample((int)it->get("originX").get<double>(), (int)it->get("originY").get<double>(), inParameters.nS) );
+		if (it->contains("originX") && it->contains("originY")) {				// Allow for obsolete syntax
+			inSamples.push_back(sample((int)it->get("originX").get<double>(), (int)it->get("originY").get<double>(), inParameters.nS));
+		}
+		else if (it->contains("originI") && it->contains("originJ")) {			// Corect parameters names (originX -> originI, originY -> originJ)
+			inSamples.push_back(sample((int)it->get("originI").get<double>(), (int)it->get("originJ").get<double>(), inParameters.nS));
+		}
+		else {
+			throw std::exception("JSON samples do not contain originX/originY or originI/originJ entries.");
+		}
 	}
 
 
@@ -83,4 +93,17 @@ void load_JSON_setting(std::string inFile, wangSet & tileSet, parameters & inPar
 	//		<< std::endl;
 	//}
 
-};
+}
+
+pixelArray convert_lightnessMap_to_pixelArray(std::vector<double> & lightnessMap, int nTx, int nTy)
+{
+	int val = 0;
+	pixelArray out(nTy,nTx);
+	for (int i = 0; i < nTy; i++){
+		for (int j = 0; j < nTx; j++) {
+			val = (int)(lightnessMap.at((nTy-1-i)*nTx+j)*255);
+			out.add_pixel(val,val,val);
+		}
+	}
+	return out;
+}

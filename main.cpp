@@ -231,6 +231,8 @@ int main(int argc, char * argv[]) throw(...)
 
 		// Partition reference image and compute local lightness
 		lightnessMap = refImg.compute_lightness_map(nTx, nTy);
+		pixelArray lightnessImg = convert_lightnessMap_to_pixelArray(lightnessMap, nTx, nTy);
+		lightnessImg.save_BMP("lightnessMap.bmp");
 	}
 
 
@@ -252,16 +254,16 @@ int main(int argc, char * argv[]) throw(...)
 
 
 	// Test tiling
-	if (useRefImg) {
-		tiling = tileSet.give_stochastic_tiling(nTx, nTy);
-	}
-	else {
-		tiling = tileSet.give_stochastic_tiling(nTx, nTy, lightnessMap);
-	}
-	std::cout << "Stochastic tiling [ " << nTx << ", " << nTy << "] generated" << std::endl;
-	tileSet.construct_tiling_image(&tiling);
-	std::cout << "Tiling image generated" << std::endl;
-	tiling.save_tiling_BMP(outputTilingImage);
+	//if (useRefImg) {
+	//	tiling = tileSet.give_stochastic_tiling(nTx, nTy, lightnessMap);
+	//}
+	//else {
+	//	tiling = tileSet.give_stochastic_tiling(nTx, nTy);
+	//}
+	//std::cout << "Stochastic tiling [ " << nTx << ", " << nTy << "] generated" << std::endl;
+	//tileSet.construct_tiling_image(&tiling);
+	//std::cout << "Tiling image generated" << std::endl;
+	//tiling.save_tiling_BMP(outputTilingImage);
 
 
 #ifdef _DEBUG

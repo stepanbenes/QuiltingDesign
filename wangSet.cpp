@@ -103,13 +103,13 @@ wangTiling wangSet::give_stochastic_tiling(int nTx, int nTy)
 				}
 				if (addTile) {
 					nCand++;
-					candidates[nCand - 1] = (it - tiles.begin());
+					candidates.at(nCand - 1) = (it - tiles.begin());
 				}
 			}
 
 			// Choose one tile 
 			std::uniform_int_distribution<> uid(0, nCand-1);
-			tiling[iY*nTx+iX] = candidates.at( uid(gen) );
+			tiling.at(iY*nTx+iX) = candidates.at( uid(gen) );
 
 		}
 	}
@@ -148,7 +148,7 @@ wangTiling wangSet::give_stochastic_tiling(int nTx, int nTy, std::vector<double>
 				}
 				if (addTile) {
 					nCand++;
-					candidates[nCand - 1] = (it - tiles.begin());
+					candidates.at(nCand - 1) = (it - tiles.begin());
 				}
 			}
 
@@ -156,13 +156,13 @@ wangTiling wangSet::give_stochastic_tiling(int nTx, int nTy, std::vector<double>
 			indVal = 0;
 			minVal = std::numeric_limits<double>::max();
 			for (int iC = 0; iC < nCand; iC++) {
-				actVal = abs(lightnessMap.at(iY*nTx + iX) - tiles[candidates[iC]].get_averaged_lightness());
+				actVal = abs(lightnessMap.at(iY*nTx + iX) - tiles.at(candidates.at(iC)).get_averaged_lightness());
 				if (actVal<minVal) {
 					minVal = actVal;
 					indVal = iC;
 				}
 			}
-			tiling[iY*nTx + iX] = candidates[indVal];
+			tiling.at(iY*nTx + iX) = candidates.at(indVal);
 
 		}
 	}
@@ -177,7 +177,7 @@ void wangSet::construct_tiling_image(wangTiling * inTiling)
 
 	// Acquire tile resolution
 	int resI, resJ;
-	tiles.at(0).get_tile_image().get_resolution(resI,resJ);
+	(tiles.at(0)).getptr_tile_image()->get_resolution(resI, resJ);
 	int nTx, nTy;
 	inTiling->get_tiling_size(nTx, nTy);
 
@@ -198,7 +198,7 @@ void wangSet::construct_tiling_image(wangTiling * inTiling)
 			tID = inTiling->get_tileID_at(iTx, iTy);
 
 			//tilImg.add_pixel(tiles.at(tID).get_tile_image().get_pixel_at(locI, locJ));
-			tilImg.add_pixel( tiles[tID].get_pixel_at(locI,locJ) );
+			tilImg.add_pixel( tiles.at(tID).getptr_pixel_at(locI,locJ) );
 		}
 	}
 

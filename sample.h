@@ -12,7 +12,7 @@ public:
 	sample(int inRes[2]);
 	~sample();
 	void acquire_data_from_specimen(pixelArray & specimen);
-	sample merge_sample(sample * that, int nO, int nM);
+	sample merge_sample(sample * that, int nO, int nM, double & outQuiltErr);
 	sample rotate_n90(int n);
 };
 

@@ -10,12 +10,14 @@ protected:
 	int id = 0;
 	pixelArray imageData;
 	double averagedLightness = 0.0;
+	double quiltErr = 0.0;
 public:
 	wangTile();
 	wangTile(int inId, int inCodes[4]);
 	wangTile(int inId, int inCode1, int inCode2, int inCode3, int inCode4);
 	int get_ID() const;
 	int get_code(int iC) const;
+	double get_quiltErr() const;
 	pixelArray get_tile_image() const;
 	pixelArray * getptr_tile_image();
 	pixel get_pixel_at(int iCoord, int jCoord);

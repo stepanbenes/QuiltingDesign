@@ -17,6 +17,15 @@ int wangSet::get_nTiles()
 	return nT;
 }
 
+double wangSet::get_quiltErr()
+{
+	quiltErr = 0.0;
+	for (std::vector<wangTile>::const_iterator it = tiles.begin(); it != tiles.end(); ++it) {
+		quiltErr += it->get_quiltErr();
+	}
+	return quiltErr;
+}
+
 void wangSet::set_nTiles(int inNt)
 {
 	// Set number of tiles and pre-allocate space in wangTile vector

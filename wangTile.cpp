@@ -38,6 +38,11 @@ int wangTile::get_code(int iC) const
 	}
 }
 
+double wangTile::get_quiltErr() const
+{
+	return quiltErr;
+}
+
 pixelArray wangTile::get_tile_image() const
 {
 	return imageData;
@@ -64,19 +69,28 @@ void wangTile::construct_tile_image(std::vector<sample> & allSamples, int nO, in
 	int tileSize[2] = {nT, nT};
 	double tileScale = 2.0/sqrt(2.0);
 	double tileOrigin[2] = { (nO - 1.0) / 2.0, ((2.0*nT+nO)-1.0)/2.0 };
+	double sampleQuiltErr;
+	double totalQuiltErr = 0.0;
 
-	sample merged03 = allSamples.at(codes[0]).merge_sample(&allSamples.at(codes[3]), nO, 1);
+	sampleQuiltErr = 0.0;
+	sample merged03 = allSamples.at(codes[0]).merge_sample(&allSamples.at(codes[3]), nO, 1, sampleQuiltErr);
+	totalQuiltErr += sampleQuiltErr;
 	sample sample2rot = allSamples.at(codes[2]).rotate_n90(2);
 	sample sample1rot = allSamples.at(codes[1]).rotate_n90(2);
-	sample merged21rot = sample1rot.merge_sample(&sample2rot, nO, 1);
+	sampleQuiltErr = 0.0;
+	sample merged21rot = sample1rot.merge_sample(&sample2rot, nO, 1, sampleQuiltErr);
+	totalQuiltErr += sampleQuiltErr;
 	sample merged21 = merged21rot.rotate_n90(2);
 
 	sample merged03rot = merged03.rotate_n90(1);
 	merged21rot = merged21.rotate_n90(1);
-	sample merged0321rot = merged03rot.merge_sample(&merged21rot, nO, 2);
+	sampleQuiltErr = 0.0;
+	sample merged0321rot = merged03rot.merge_sample(&merged21rot, nO, 2, sampleQuiltErr);
+	totalQuiltErr += sampleQuiltErr;
 	sample merged0321 = merged0321rot.rotate_n90(3);
 
 	imageData = merged0321.extract_patch(tileOrigin, tileSize, tileScale, -1);
+	quiltErr = totalQuiltErr;
 }
 
 void wangTile::save_tile_BMP(std::string outFile)

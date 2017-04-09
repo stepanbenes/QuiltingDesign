@@ -42,7 +42,7 @@ void sample::acquire_data_from_specimen(pixelArray & specimen)
 	data = *((specimen.extract_patch(doubleOrigin, resolution, sqrt(2.0) / 2.0, 1)).getptr_data_vector());
 }
 
-sample sample::merge_sample(sample * that, int nO, int nM)
+sample sample::merge_sample(sample * that, int nO, int nM, double & outQuiltErr)
 {
 	// MERGE_SAMPLES method performs image quilting algorithm on two samples,
 	// which are assumed to be aligned side-by-side, this object first. Input 
@@ -143,6 +143,14 @@ sample sample::merge_sample(sample * that, int nO, int nM)
 		optPath[i] = minInd;
 	}
 
+	// Compute overall quilting error while neglecting contribution of the wedge mask
+	double quiltErr = 0.0;
+	for (int i = 0; i < nRows; i++) {
+		if (arrayErr[i*nO + optPath[i]] != maxErr) {
+			quiltErr += arrayErr[i*nO + optPath[i]];
+		}
+	}
+	outQuiltErr = quiltErr;
 
 	// Assemble merged image
 	int mergedSampleSize[2] = { nRows, (this->resolution[1] + that->resolution[1]) - nO };

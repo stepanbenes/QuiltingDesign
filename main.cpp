@@ -21,8 +21,8 @@ Main file contains two separate executable scripts: (i) QuiltingDesign and (ii) 
 Choose among the scripts using defined macro
 */
 
-//#define QA		// Uncomment for QuiltingDesign
-#define TA		// Uncomment for TilingAssembly
+#define QA		// Uncomment for QuiltingDesign
+//#define TA		// Uncomment for TilingAssembly
 
 
 
@@ -121,7 +121,7 @@ int main(int argc, char * argv[]) throw(...)
 	// Construct tiles
 	tileSet.construct_tiles(allSamples, myParams.nO, myParams.nT);
 	tileSet.save_tiles_BMP(outputFolder, tileStencil, tileSuffix);
-	std::cout << "Tiles created" << std::endl;
+	std::cout << "Tiles created with overall quilting errror " << tileSet.get_quiltErr() << std::endl;
 
 
 	// Test tiling
@@ -254,16 +254,16 @@ int main(int argc, char * argv[]) throw(...)
 
 
 	// Test tiling
-	//if (useRefImg) {
-	//	tiling = tileSet.give_stochastic_tiling(nTx, nTy, lightnessMap);
-	//}
-	//else {
-	//	tiling = tileSet.give_stochastic_tiling(nTx, nTy);
-	//}
-	//std::cout << "Stochastic tiling [ " << nTx << ", " << nTy << "] generated" << std::endl;
-	//tileSet.construct_tiling_image(&tiling);
-	//std::cout << "Tiling image generated" << std::endl;
-	//tiling.save_tiling_BMP(outputTilingImage);
+	if (useRefImg) {
+		tiling = tileSet.give_stochastic_tiling(nTx, nTy, lightnessMap);
+	}
+	else {
+		tiling = tileSet.give_stochastic_tiling(nTx, nTy);
+	}
+	std::cout << "Stochastic tiling [ " << nTx << ", " << nTy << "] generated" << std::endl;
+	tileSet.construct_tiling_image(&tiling);
+	std::cout << "Tiling image generated" << std::endl;
+	tiling.save_tiling_BMP(outputTilingImage);
 
 
 #ifdef _DEBUG

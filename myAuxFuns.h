@@ -12,4 +12,5 @@ struct parameters {
 };
 
 void load_JSON_setting(std::string inFile, wangSet & tileSet, parameters & inParameters, std::vector<sample> & inSamples);
+void save_JSON_results(std::string & outFile, std::string & date, double duration, double quiltError);
 pixelArray convert_lightnessMap_to_pixelArray(std::vector<double> & lightnessMap, int nTx, int nTy);

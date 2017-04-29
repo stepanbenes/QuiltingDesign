@@ -8,6 +8,9 @@
 #include <streambuf>
 #include <limits>
 #include <exception>
+#include <chrono>
+#include <ctime>
+#include <iomanip>
 #include "myAuxFuns.h"
 #include "pixel.h"
 #include "pixelArray.h"
@@ -24,7 +27,7 @@ Choose among the scripts using defined macro
 #define QA		// Uncomment for QuiltingDesign
 //#define TA		// Uncomment for TilingAssembly
 
-
+#pragma warning(disable : 4996)		// Disable _CRT_SECURE_NO_WARNINGS that occurs due to ctime() use
 
 // ****** QUILTING DESIGN MAIN SCRIPT *****
 #ifdef QA
@@ -32,6 +35,7 @@ Choose among the scripts using defined macro
 int main(int argc, char * argv[]) throw(...)
 {
 	std::string inputJSONfile = "test-iofiles/muLib_ImageInput.json";
+	std::string outputJSONfile = "log.json";
 	std::string inputSpecimenFile = "test-iofiles/_specimen.bmp";
 	std::string outputFolder = "test-iofiles/";
 	std::string outputTilingImage = "test-iofiles/_tiling.bmp";
@@ -39,6 +43,9 @@ int main(int argc, char * argv[]) throw(...)
 	const std::string sampleSuffix = ".bmp";
 	const std::string tileStencil = "tile";
 	const std::string tileSuffix = ".bmp";
+	std::chrono::time_point<std::chrono::system_clock> startWatch, stopWatch, allStartWatch, allStopWatch;
+	std::chrono::duration<double> timeInterval;
+	std::time_t currentTime;
 	wangSet tileSet;
 	pixelArray specimen;
 	parameters myParams;					// Structure encapsulating settings (defined in myAuxFuns.h)
@@ -63,9 +70,10 @@ int main(int argc, char * argv[]) throw(...)
 		inputSpecimenFile = (std::string)argv[2];
 		outputFolder = (std::string)argv[3];
 	}
-
+	allStartWatch = std::chrono::system_clock::now();
 
 	// Load setting from JSON file
+	startWatch = std::chrono::system_clock::now();
 	try {
 		load_JSON_setting(inputJSONfile, tileSet, myParams, allSamples);
 	}
@@ -76,10 +84,14 @@ int main(int argc, char * argv[]) throw(...)
 #endif
 		exit(1);
 	}
-	std::cout << "Input JSON file loaded" << std::endl;
+	stopWatch = std::chrono::system_clock::now();
+	timeInterval = stopWatch - startWatch;
+	currentTime = std::chrono::system_clock::to_time_t(stopWatch);
+	std::cout << std::put_time(std::localtime(&currentTime), "%T") << ": Input JSON file loaded in " << timeInterval.count() << " s." << std::endl;
 
 
 	// Load specimen data
+	startWatch = std::chrono::system_clock::now();
 	try {
 		specimen.load_BMP(inputSpecimenFile);
 	}
@@ -90,10 +102,14 @@ int main(int argc, char * argv[]) throw(...)
 #endif
 		exit(1);
 	}
-	std::cout << "Specimen BMP file loaded" << std::endl;
+	stopWatch = std::chrono::system_clock::now();
+	timeInterval = stopWatch - startWatch;
+	currentTime = std::chrono::system_clock::to_time_t(stopWatch);
+	std::cout << std::put_time(std::localtime(&currentTime), "%T") << ": Specimen BMP file loaded in " << timeInterval.count() << " s." << std::endl;
 
 
 	// Extract samples
+	startWatch = std::chrono::system_clock::now();
 	for (std::vector<sample>::iterator i = allSamples.begin(); i != allSamples.end(); ++i) {
 		try {
 			i->acquire_data_from_specimen(specimen);
@@ -115,22 +131,44 @@ int main(int argc, char * argv[]) throw(...)
 		i->save_BMP(fileName);
 #endif
 	}
-	std::cout << "Samples extracted" << std::endl;
+	stopWatch = std::chrono::system_clock::now();
+	timeInterval = stopWatch - startWatch;
+	currentTime = std::chrono::system_clock::to_time_t(stopWatch);
+	std::cout << std::put_time(std::localtime(&currentTime), "%T") << ": Samples extracted in " << timeInterval.count() << " s." << std::endl;
 
 
 	// Construct tiles
+	startWatch = std::chrono::system_clock::now();
 	tileSet.construct_tiles(allSamples, myParams.nO, myParams.nT);
 	tileSet.save_tiles_BMP(outputFolder, tileStencil, tileSuffix);
-	std::cout << "Tiles created with overall quilting errror " << tileSet.get_quiltErr() << std::endl;
+	stopWatch = std::chrono::system_clock::now();
+	timeInterval = stopWatch - startWatch;
+	currentTime = std::chrono::system_clock::to_time_t(stopWatch);
+	std::cout << std::put_time(std::localtime(&currentTime), "%T") << ": Tiles created in " << timeInterval.count() << " s with overall quilting errror " << tileSet.get_quiltErr() << "." << std::endl;
 
 
 	// Test tiling
+	startWatch = std::chrono::system_clock::now();
 	wangTiling tiling = tileSet.give_stochastic_tiling(4, 3);
-	std::cout << "Stochastic tiling generated" << std::endl;
+	stopWatch = std::chrono::system_clock::now();
+	timeInterval = stopWatch - startWatch;
+	currentTime = std::chrono::system_clock::to_time_t(stopWatch);
+	std::cout << std::put_time(std::localtime(&currentTime), "%T") << ": Stochastic tiling generated in " << timeInterval.count() << " s." << std::endl;
+
+	startWatch = std::chrono::system_clock::now();
 	tileSet.construct_tiling_image(&tiling);
-	std::cout << "Tiling image generated" << std::endl;
+	stopWatch = std::chrono::system_clock::now();
+	timeInterval = stopWatch - startWatch;
+	currentTime = std::chrono::system_clock::to_time_t(stopWatch);
+	std::cout << std::put_time(std::localtime(&currentTime), "%T") << ": Tiling image generated in " << timeInterval.count() << " s." << std::endl;
 	tiling.save_tiling_BMP(outputTilingImage);
 
+
+	allStopWatch = std::chrono::system_clock::now();
+	timeInterval = stopWatch - startWatch;
+	std::stringstream datestream;
+	datestream << std::put_time(std::localtime(&currentTime), "%c");
+	save_JSON_results(outputFolder + outputJSONfile, datestream.str(), timeInterval.count(), tileSet.get_quiltErr());
 
 #ifdef _DEBUG
 	std::cout << "Press any key to abort the program...";
@@ -151,13 +189,16 @@ int main(int argc, char * argv[]) throw(...)
 int main(int argc, char * argv[]) throw(...)
 {
 	std::string inputJSONfile = "test-iofiles/muLib_ImageInput_fromJP.json";
-	std::string inputFolder = "test-iofiles/fromJP/modified/";
+	std::string inputFolder = "test-iofiles/fromJP/type_e/";
 	std::string outputTilingImage = "test-iofiles/_tiling.bmp";
 	std::string inputReferenceImage = "test-iofiles/fromJP/reference.bmp";
 	int nTx = 40;
 	int nTy = 19;
 	const std::string tileStencil = "tile";
 	const std::string tileSuffix = ".bmp";
+	std::chrono::time_point<std::chrono::system_clock> startWatch, stopWatch, allStartWatch, allStopWatch;
+	std::chrono::duration<double> timeInterval;
+	std::time_t currentTime;
 	wangSet tileSet;
 	parameters myParams;					// Structure encapsulating settings (defined in myAuxFuns.h)
 	std::vector<sample> allSamples;			// Obsolete, only to re-use load_JSON_setting function
@@ -200,9 +241,10 @@ int main(int argc, char * argv[]) throw(...)
 			useRefImg = false;
 		}
 	}
-
+	allStartWatch = std::chrono::system_clock::now();
 
 	// Load setting from JSON file
+	startWatch = std::chrono::system_clock::now();
 	try {
 		load_JSON_setting(inputJSONfile, tileSet, myParams, allSamples);
 	}
@@ -213,11 +255,15 @@ int main(int argc, char * argv[]) throw(...)
 #endif
 		exit(1);
 	}
-	std::cout << "Input JSON file loaded" << std::endl;
+	stopWatch = std::chrono::system_clock::now();
+	timeInterval = stopWatch - startWatch;
+	currentTime = std::chrono::system_clock::to_time_t(stopWatch);
+	std::cout << std::put_time(std::localtime(&currentTime), "%T") << ": Input JSON file loaded in " << timeInterval.count() << " s." << std::endl;
 
 
 	// Load reference image and define average lightness map
 	if (useRefImg) {
+		startWatch = std::chrono::system_clock::now();
 		try {
 			refImg.load_BMP(inputReferenceImage);
 		}
@@ -232,11 +278,16 @@ int main(int argc, char * argv[]) throw(...)
 		// Partition reference image and compute local lightness
 		lightnessMap = refImg.compute_lightness_map(nTx, nTy);
 		pixelArray lightnessImg = convert_lightnessMap_to_pixelArray(lightnessMap, nTx, nTy);
-		lightnessImg.save_BMP("lightnessMap.bmp");
+		//lightnessImg.save_BMP("lightnessMap.bmp");
+		stopWatch = std::chrono::system_clock::now();
+		timeInterval = stopWatch - startWatch;
+		currentTime = std::chrono::system_clock::to_time_t(stopWatch);
+		std::cout << std::put_time(std::localtime(&currentTime), "%T") << ": Input JSON file loaded in " << timeInterval.count() << " s." << std::endl;
 	}
 
 
 	// Load tiles
+	startWatch = std::chrono::system_clock::now();
 	try {
 		tileSet.load_tiles_BMP(inputFolder, tileStencil, tileSuffix);
 	}
@@ -247,24 +298,39 @@ int main(int argc, char * argv[]) throw(...)
 #endif
 		exit(1);
 	}
-	std::cout << "Tile images loaded" << std::endl;
 	if (useRefImg) {
 		tileSet.compute_averaged_tile_lightness();
 	}
+	stopWatch = std::chrono::system_clock::now();
+	timeInterval = stopWatch - startWatch;
+	currentTime = std::chrono::system_clock::to_time_t(stopWatch);
+	std::cout << std::put_time(std::localtime(&currentTime), "%T") << ": Tile images loaded in " << timeInterval.count() << " s." << std::endl;
 
 
-	// Test tiling
+	// TEST: Construct stochastic tiling map
+	startWatch = std::chrono::system_clock::now();
 	if (useRefImg) {
 		tiling = tileSet.give_stochastic_tiling(nTx, nTy, lightnessMap);
 	}
 	else {
 		tiling = tileSet.give_stochastic_tiling(nTx, nTy);
 	}
-	std::cout << "Stochastic tiling [ " << nTx << ", " << nTy << "] generated" << std::endl;
-	tileSet.construct_tiling_image(&tiling);
-	std::cout << "Tiling image generated" << std::endl;
-	tiling.save_tiling_BMP(outputTilingImage);
+	stopWatch = std::chrono::system_clock::now();
+	timeInterval = stopWatch - startWatch;
+	currentTime = std::chrono::system_clock::to_time_t(stopWatch);
+	std::cout << std::put_time(std::localtime(&currentTime), "%T") << ": Stochastic tiling[" << nTx << ", " << nTy << "] generated in " << timeInterval.count() << " s." << std::endl;
 
+	// TEST: Constructu stochastic tiling image
+	startWatch = std::chrono::system_clock::now();
+	tileSet.construct_tiling_image(&tiling);
+	tiling.save_tiling_BMP(outputTilingImage);
+	stopWatch = std::chrono::system_clock::now();
+	timeInterval = stopWatch - startWatch;
+	currentTime = std::chrono::system_clock::to_time_t(stopWatch);
+	std::cout << std::put_time(std::localtime(&currentTime), "%T") << ": Tiling image generated and saved in " << timeInterval.count() << " s." << std::endl;
+
+
+	allStopWatch = std::chrono::system_clock::now();
 
 #ifdef _DEBUG
 	std::cout << "Press any key to abort the program...";

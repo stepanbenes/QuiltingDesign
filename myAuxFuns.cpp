@@ -95,6 +95,29 @@ void load_JSON_setting(std::string inFile, wangSet & tileSet, parameters & inPar
 
 }
 
+void save_JSON_results(std::string & outFile, std::string & date, double duration, double quiltError) {
+
+	picojson::object outJSON;
+	std::ofstream outF;
+
+	// Create JSON entries
+	outJSON["date"] = picojson::value(date);
+	outJSON["duration"] = picojson::value(duration);
+	outJSON["quiltError"] = picojson::value(quiltError);
+
+	// Write into file
+	outF.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+	try {
+		outF.open(outFile, std::ios::binary | std::ios::out);
+	}
+	catch (std::ios_base::failure& inErr) {
+		std::cerr << "The requested output file cannot be created. System error: " << inErr.what() << std::endl;
+	}
+	outF << picojson::value(outJSON).serialize();
+	outF.close();
+
+}
+
 pixelArray convert_lightnessMap_to_pixelArray(std::vector<double> & lightnessMap, int nTx, int nTy)
 {
 	int val = 0;

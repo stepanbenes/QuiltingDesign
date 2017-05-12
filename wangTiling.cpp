@@ -52,8 +52,9 @@ void wangTiling::save_tiling_WTF(std::string outFile)
 	}
 	for (int iTy = 0; iTy < nTy; iTy++) {
 		for (int iTx = 0; iTx < nTx; iTx++) {
-			outF << tilingPlan.at(iTy*nTx+iTx) << std::endl;
+			outF << tilingPlan.at(iTy*nTx+iTx) << " ";
 		}
+		outF << std::endl;
 	}
 	outF.close();
 

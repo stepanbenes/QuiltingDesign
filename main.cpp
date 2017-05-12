@@ -24,8 +24,8 @@ Main file contains two separate executable scripts: (i) QuiltingDesign and (ii) 
 Choose among the scripts using defined macro
 */
 
-#define QA		// Uncomment for QuiltingDesign
-//#define TA		// Uncomment for TilingAssembly
+//#define QA		// Uncomment for QuiltingDesign
+#define TA		// Uncomment for TilingAssembly
 
 #pragma warning(disable : 4996)		// Disable _CRT_SECURE_NO_WARNINGS that occurs due to ctime() use
 
@@ -243,6 +243,14 @@ int main(int argc, char * argv[]) throw(...)
 	}
 	allStartWatch = std::chrono::system_clock::now();
 
+
+	// Check if BMP or WTF is required
+	bool wtfOnly = false;
+	size_t charLen = outputTilingImage.length();
+	if (outputTilingImage.compare(charLen - 4, 4, ".wtf") == 0) {
+		wtfOnly = true;
+	};
+
 	// Load setting from JSON file
 	startWatch = std::chrono::system_clock::now();
 	try {
@@ -287,27 +295,29 @@ int main(int argc, char * argv[]) throw(...)
 
 
 	// Load tiles
-	startWatch = std::chrono::system_clock::now();
-	try {
-		tileSet.load_tiles_BMP(inputFolder, tileStencil, tileSuffix);
-	}
-	catch (const std::exception & e) {
-		std::cerr << e.what() << std::endl;
+	if (!wtfOnly) {
+		startWatch = std::chrono::system_clock::now();
+		try {
+			tileSet.load_tiles_BMP(inputFolder, tileStencil, tileSuffix);
+		}
+		catch (const std::exception & e) {
+			std::cerr << e.what() << std::endl;
 #ifdef _DEBUG
-		std::cin.get();
+			std::cin.get();
 #endif
-		exit(1);
-	}
-	if (useRefImg) {
-		tileSet.compute_averaged_tile_lightness();
-	}
-	stopWatch = std::chrono::system_clock::now();
-	timeInterval = stopWatch - startWatch;
-	currentTime = std::chrono::system_clock::to_time_t(stopWatch);
-	std::cout << std::put_time(std::localtime(&currentTime), "%T") << ": Tile images loaded in " << timeInterval.count() << " s." << std::endl;
+			exit(1);
+		}
+		if (useRefImg) {
+			tileSet.compute_averaged_tile_lightness();
+		}
+		stopWatch = std::chrono::system_clock::now();
+		timeInterval = stopWatch - startWatch;
+		currentTime = std::chrono::system_clock::to_time_t(stopWatch);
+		std::cout << std::put_time(std::localtime(&currentTime), "%T") << ": Tile images loaded in " << timeInterval.count() << " s." << std::endl;
 
+	}
 
-	// TEST: Construct stochastic tiling map
+	// Construct stochastic tiling
 	startWatch = std::chrono::system_clock::now();
 	if (useRefImg) {
 		tiling = tileSet.give_stochastic_tiling(nTx, nTy, lightnessMap);
@@ -320,14 +330,19 @@ int main(int argc, char * argv[]) throw(...)
 	currentTime = std::chrono::system_clock::to_time_t(stopWatch);
 	std::cout << std::put_time(std::localtime(&currentTime), "%T") << ": Stochastic tiling[" << nTx << ", " << nTy << "] generated in " << timeInterval.count() << " s." << std::endl;
 
-	// TEST: Constructu stochastic tiling image
-	startWatch = std::chrono::system_clock::now();
-	tileSet.construct_tiling_image(&tiling);
-	tiling.save_tiling_BMP(outputTilingImage);
-	stopWatch = std::chrono::system_clock::now();
-	timeInterval = stopWatch - startWatch;
-	currentTime = std::chrono::system_clock::to_time_t(stopWatch);
-	std::cout << std::put_time(std::localtime(&currentTime), "%T") << ": Tiling image generated and saved in " << timeInterval.count() << " s." << std::endl;
+	// Assemble tiling image
+	if (!wtfOnly) {
+		startWatch = std::chrono::system_clock::now();
+		tileSet.construct_tiling_image(&tiling);
+		tiling.save_tiling_BMP(outputTilingImage);
+		stopWatch = std::chrono::system_clock::now();
+		timeInterval = stopWatch - startWatch;
+		currentTime = std::chrono::system_clock::to_time_t(stopWatch);
+		std::cout << std::put_time(std::localtime(&currentTime), "%T") << ": Tiling image generated and saved in " << timeInterval.count() << " s." << std::endl;
+	}
+	else {
+		tiling.save_tiling_WTF(outputTilingImage);
+	}
 
 
 	allStopWatch = std::chrono::system_clock::now();

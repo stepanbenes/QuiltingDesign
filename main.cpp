@@ -148,6 +148,7 @@ int main(int argc, char * argv[]) throw(...)
 
 
 	// Test tiling
+#ifdef _DEBUG
 	startWatch = std::chrono::system_clock::now();
 	wangTiling tiling = tileSet.give_stochastic_tiling(4, 3);
 	stopWatch = std::chrono::system_clock::now();
@@ -162,7 +163,7 @@ int main(int argc, char * argv[]) throw(...)
 	currentTime = std::chrono::system_clock::to_time_t(stopWatch);
 	std::cout << std::put_time(std::localtime(&currentTime), "%T") << ": Tiling image generated in " << timeInterval.count() << " s." << std::endl;
 	tiling.save_tiling_BMP(outputTilingImage);
-
+#endif
 
 	allStopWatch = std::chrono::system_clock::now();
 	timeInterval = stopWatch - startWatch;

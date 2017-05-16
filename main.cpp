@@ -296,7 +296,7 @@ int main(int argc, char * argv[]) throw(...)
 
 
 	// Load tiles
-	if (!wtfOnly) {
+	if (!wtfOnly || useRefImg) {
 		startWatch = std::chrono::system_clock::now();
 		try {
 			tileSet.load_tiles_BMP(inputFolder, tileStencil, tileSuffix);

@@ -50,7 +50,7 @@ void wangTiling::save_tiling_WTF(std::string outFile)
 	catch (std::ios_base::failure& inErr) {
 		std::cerr << "The requested output file cannot be created. System error: " << inErr.what() << std::endl;
 	}
-	for (int iTy = 0; iTy < nTy; iTy++) {
+	for (int iTy = nTy - 1; iTy >= 0; iTy--) {
 		for (int iTx = 0; iTx < nTx; iTx++) {
 			outF << tilingPlan.at(iTy*nTx+iTx) << " ";
 		}
